@@ -1,0 +1,261 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  padding-top: 20px;
+  margin-bottom: 25px;
+  align-items: center;
+  text-align: center;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 3%;
+  background-color: #333;
+  color: white;
+  display: flex;
+  z-index: 1000;
+  vertical-align: middle;
+  text-align: left;
+  font-size: 15px;
+  margin-bottom: 0px;
+}
+
+h2 {
+  font-size: 40px;
+}
+
+header img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.welcome {
+  display: flex;
+  gap: 10px;
+  vertical-align: middle;
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  vertical-align: middle;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.logo {
+  margin-left: 20px;
+}
+
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.menu li {
+  position: relative;
+  vertical-align: middle;
+}
+
+.menu a {
+  text-decoration: none;
+  color: white;
+  padding: 5px 10px;
+  vertical-align: middle;
+  transition: 0.3s;
+}
+
+.menu li:hover {
+  background-color: #888;
+  font-style: italic;
+  text-decoration: underline;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  background-color: #444;
+  list-style: none;
+  min-width: 110px;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.hamburger-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+  background-color: #444;
+  list-style: none;
+  min-width: 150px;
+}
+
+.hamburger:hover .hamburger-menu {
+  display: block;
+}
+
+#introduction {
+  justify-content: space-between;
+  display: flex;
+  height: 75vh;
+  text-align: left;
+  box-sizing: border-box;
+  background-color: #e7e0d4;
+  align-items: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.intro-content {
+  max-width: 60%;
+  margin-left: 180px;
+}
+
+.intro-content h2 {
+  margin: 0;
+  padding-bottom: 30px; /* Space between title and text */
+  text-align: center;
+  margin-left: 80px;
+  margin-right: 100px;
+  font-size: 50px;
+}
+
+.intro-content p {
+  margin: 0;
+  font-size: 20px;
+}
+
+.profile-pic {
+  width: 400px;
+  height: 500px;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  margin-right: 200px;
+}
+
+#timetable {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin: 0;
+  padding: 20px;
+  padding-top: 60px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  padding-top: 20px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #b3d6ad;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+}
+
+#contact {
+  text-align: center;
+  background-color: #e7e0d4;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  box-sizing: border-box;
+}
+
+#contact h2 {
+  margin-bottom: 0px;
+  padding-top: 20px;
+  font-size: 40px;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 50px;
+}
+
+footer {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background-color: #222;
+  color: white;
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  bottom: 0;
+  height: 30px;
+  font-size: 10px;
+  vertical-align: middle;
+  position: relative;
+}
+
+footer p {
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.social-links img {
+  display: flex-end;
+  justify-content: center;
+  padding: 10px;
+  height: 50px;
+  width: 50px;
+  margin-bottom: 0px;
+  vertical-align: middle;
+  margin-top: 20px;
+}
+
+.social-links img:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3);
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background-color: #e7e0d4;
+  vertical-align: middle;
+  align-items: center;
+  padding: 0px;
+  margin: 0px;
+}

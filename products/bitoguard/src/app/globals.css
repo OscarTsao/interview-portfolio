@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f9;
+  --foreground: #1a1d2e;
+  --accent: #4958a8;
+  --danger: #bf2525;
+  --warning: #9a4300;
+  --success: #24712a;
+  --border: #e5e7eb;
+  --sidebar-width: 220px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f4f6f9; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5c677a; }
+
+.bito-sidebar { width: var(--sidebar-width); }
+.bito-main { margin-left: var(--sidebar-width); padding: 24px; overflow-wrap: anywhere; }
+.bito-main .grid > *, .bito-main .flex > * { min-width: 0; }
+.bito-main select { min-width: 0; max-width: 100%; }
+.bito-main button, .bito-main select, .bito-sidebar nav a { min-height: 44px; }
+.bito-main input, .bito-main select, .bito-main textarea { border-color: #5c677a; }
+.table-scroll { max-width: 100%; overflow-x: auto; }
+.table-scroll table { min-width: 640px; }
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #3949ab; outline-offset: 3px;
+}
+.skip-link { position: fixed; top: -100px; left: 16px; padding: 12px 16px; background: #3949ab; color: white; z-index: 50; }
+.skip-link:focus { top: 12px; }
+@media (max-width: 767px) {
+  .bito-sidebar { position: static; width: 100%; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+  .bito-sidebar > div:first-child { padding: 12px 16px; }
+  .bito-sidebar > div:last-child { display: none; }
+  .bito-sidebar nav { display: flex; overflow-x: auto; gap: 4px; padding: 8px; }
+  .bito-sidebar nav > p { display: none; }
+  .bito-sidebar nav a { flex-shrink: 0; white-space: nowrap; }
+  .bito-main { margin-left: 0; padding: 16px; }
+  .table-scroll::before { content: "表格可左右捲動"; display: block; padding: 8px 16px; font-size: 12px; color: #5f6673; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

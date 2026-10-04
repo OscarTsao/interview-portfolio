@@ -1,0 +1,12 @@
+---
+import Site from '../layouts/Site.astro';
+const base=import.meta.env.BASE_URL;
+---
+<Site title="展示架構與驗證 — Yu-Ning Tsao" description="作品集、原產品介面、展示 API 與凍結研究資料如何組合，以及本機驗證與正式部署的界線。">
+<a class="back" href={base}>← 回到作品集</a><section class="case-hero"><p class="eyebrow">ENGINEERING NOTES</p><h1>把展示做成<br/>可以解釋的系統。</h1><p>作品集負責說明，產品保留自己的操作，研究結果保持可追溯。這一頁說明展示版本的架構、發布方式與驗證界線。</p></section>
+<div class="prose engineering"><h2>目前的展示架構</h2><ol class="method-flow"><li><strong>作品集</strong><span>Astro 靜態頁：個人介紹、工程案例、真實畫面。</span></li><li><strong>互動產品</strong><span>BitoGuard 原前端及展示 API；其他移植原型另列差異。</span></li><li><strong>研究證據</strong><span>HiED 最小凍結案例；無需即時模型或修改研究結果。</span></li></ol><p>產品前端和 API 使用同一來源，展示案件與訂單由 D1 按訪客保存；聊天房間以 Durable Object 維持狀態。作品集不依賴互動服務才能閱讀。</p>
+<h2>原始系統與展示環境</h2><p>BitoGuard 原系統使用 Next.js、FastAPI 與 DuckDB；我的主要工作包含 ML 與 AWS 部署。現在的展示將原前端輸出為靜態檔案，再以 Worker 供應相同格式的合成資料。它保留產品介面，但沒有搬入原模型、訓練或同步管線。</p><p>WWW 原作保留 Docker／Nginx、PHP／MySQL 與 Node.js 的運行路徑。HW3–HW5 目前的 Cloudflare 版本仍是簡化原型，不能作為完整功能等價的證據。</p>
+<h2>眼科研究影像的本機預覽</h2><p>Ophthalmic Imaging 主頁讀取 Handover_Self-supervised 固定版本中的三組 FA 原圖與二值病灶標註；九張自監督重建圖片另列於實驗附錄。私人圖片存放於網站素材目錄之外，本機開發伺服器只提供指定的十五張圖片與兩份案例清單；靜態建置不包含這批影像。公開版可以閱讀研究方法與來源，尚不提供這些私人圖片。</p><p>影像編號不帶原始檔名，配對、來源版本與 SHA-256 另外保存在本機。這驗證展示來源與檔案一致性，不代表影像已取得公開授權，也不代表 TVST 論文或模型成效已重現。</p><p><a href={base+'vision/'}>開啟影像比較 →</a></p>
+<h2>驗證看什麼</h2><ul><li>產品行為：警示篩選、診斷、案件處置、用戶與圖譜切換。</li><li>資料邊界：不同訪客的訂單與案件隔離，重設不清除他人資料。</li><li>伺服器規則：商品價格、訂單重試、房間隔離及遊戲傷害裁決。</li><li>研究來源：保留凍結案例 ID、排序與原始狀態，不把選例當作整體評估。</li><li>閱讀與操作：手機重排、鍵盤焦點、案例載入失敗後重試。</li></ul>
+<h2>發布與回復方式</h2><p>作品集使用 GitHub Pages，互動展示使用 Cloudflare Workers、D1 與 SQLite Durable Objects，搭配免費平台網址。GitHub Actions 以手動觸發方式建構及發布作品集；本機修改不會自動覆蓋公開版本。<a href="https://github.com/OscarTsao/interview-portfolio">公開原始碼</a>與<a href="https://github.com/OscarTsao/interview-portfolio/actions/workflows/pages.yml">發布紀錄</a>可供檢查。</p><p>每次發布需分別檢查靜態網站、HTTPS API、訪客隔離與 WebSocket 操作，並記錄 Git 提交與 Worker 版本。回復時可重新發布指定的作品集版本，再以 Cloudflare 的版本紀錄回復 Worker；程式回復不會還原 D1 資料。</p><p class="note">本機測試、歷史 AWS 部署與本展示的公開發布，各自有不同的驗證範圍。合成模型指標用於展示介面，不代表模型效能；短期功能檢查也不代表長時間負載或完整無障礙稽核。</p><div class="links"><a href={base+'projects/bitoguard/'}>BitoGuard 案例 →</a><a href={base+'projects/hied/'}>HiED 研究 →</a><a href="mailto:yuning.tsao8812@gmail.com">討論工程細節</a></div></div></Site>
+<style>.engineering{max-width:900px;padding-bottom:70px}.engineering h2{margin-top:38px}</style>

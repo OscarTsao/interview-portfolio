@@ -1,0 +1,167 @@
+---
+import Site from '../layouts/Site.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Site title="Ophthalmic Imaging — 影像重建比較" description="檢視 Handover_Self-supervised 留存的參照影像、Teacher 與 Student 重建輸出。">
+  <a class="back" href={base+'vision/'}>← 回到病灶標註展示</a>
+  <section class="case-hero">
+    <p class="eyebrow">EXPERIMENT APPENDIX / RECONSTRUCTION</p>
+    <h1>同一張影像，<br/>比較兩種重建結果。</h1>
+    <p>觀察 Teacher 與 Student 如何保留影像的輪廓與細節。從並排檢視開始，再用滑動比較對照同一位置。</p>
+  </section>
+  <section class="explorer" aria-label="自監督影像重建展示">
+    <div class="explorer-heading"><div><p class="eyebrow">SAVED RECONSTRUCTIONS</p><h2>影像比較</h2></div><span class="local-label">本機研究預覽</span></div>
+    <p class="scope-note">來自 Handover_Self-supervised 的既存重建輸出；與 TVST 已發表的病灶定位結果不同。這裡沒有即時模型推論或臨床判讀。</p>
+    <div class="viewer-controls" hidden={!import.meta.env.DEV}>
+      <div class="field"><label for="vision-case">選擇影像</label><select id="vision-case" disabled><option>載入中…</option></select></div>
+      <fieldset disabled id="view-modes"><legend>比較方式</legend><label><input type="radio" name="view-mode" value="side" checked/> 並排檢視</label><label><input type="radio" name="view-mode" value="wipe"/> 滑動比較</label></fieldset>
+      <button id="vision-reset" disabled>重設檢視</button>
+    </div>
+    <p id="vision-status" role="status">正在讀取研究影像…</p>
+    <button id="vision-retry" hidden>重新載入影像</button>
+    <div id="vision-content" aria-busy="true" hidden>
+      <div id="side-view" class="image-grid">
+        <figure><figcaption><strong>01 · 輸入參照</strong><span>儲存的前處理後影像</span></figcaption><img id="input-image" width="224" height="224" alt=""/></figure>
+        <figure><figcaption><strong>02 · Teacher</strong><span>既存影像重建</span></figcaption><img id="teacher-image" width="224" height="224" alt=""/></figure>
+        <figure><figcaption><strong>03 · Student</strong><span>既存影像重建</span></figcaption><img id="student-image" width="224" height="224" alt=""/></figure>
+      </div>
+      <div id="wipe-view" hidden>
+        <div class="wipe-controls"><label for="reconstruction">與輸入參照比較</label><select id="reconstruction"><option value="teacher">Teacher 重建</option><option value="student">Student 重建</option></select></div>
+        <div class="wipe-frame" style="--reveal:50%">
+          <img id="wipe-output" width="224" height="224" alt=""/>
+          <img id="wipe-input" width="224" height="224" alt=""/>
+          <div class="wipe-line" aria-hidden="true"></div>
+          <span class="image-label label-input">輸入參照</span><span class="image-label label-output">Teacher 重建</span>
+        </div>
+        <div class="range-control"><label for="reveal">輸入參照顯示比例 <output id="reveal-value" for="reveal">50%</output></label><input id="reveal" type="range" min="0" max="100" value="50" aria-describedby="range-help"/><p id="range-help">拖曳滑桿或使用左右方向鍵；也可以切回並排檢視。</p></div>
+      </div>
+      <div class="viewer-footer"><p>原始儲存尺寸 224 × 224；放大僅方便觀察，不增加影像細節。</p><a id="vision-link" href="?case=case-01">此影像連結 →</a></div>
+    </div>
+    <noscript><p>影像比較需要 JavaScript。你仍可閱讀下方研究方法與來源說明。</p></noscript>
+  </section>
+  <section class="section reading-guide">
+    <div><p class="eyebrow">HOW TO READ</p><h2>先看輪廓，再看細節。</h2><p>比較同一位置的血管輪廓、亮暗分布與區塊紋理。不同影像的觀感可以幫助檢查輸出，不能取代完整資料上的評估。</p></div>
+    <ol><li><strong>確認參照</strong><span>左圖是 notebook 儲存的模型輸入，不是人工標註的病灶遮罩。</span></li><li><strong>對照重建</strong><span>Teacher 與 Student 圖片取自相同檔名的輸出組，沒有重新生成或修補。</span></li><li><strong>保留限制</strong><span>三張影像用來說明操作與輸出形式，不代表三位病患、測試集或整體模型表現。</span></li></ol>
+  </section>
+  <details class="source-details"><summary>研究版本、資料來源與 TVST 論文的關係</summary>
+    <p>來源為私人儲存庫 <code>OscarTsao/Handover_Self-supervised</code>，固定版本 <code>344cd81afd1b857ba4575d070035dcd8cd71a2a4</code>。目前展示 <code>see_image/unsupervised-mae</code> 中的 <code>target</code>、<code>t1_prob</code> 與 <code>s_prob</code>。Notebook 的儲存程式使用 <code>self_pred</code>，以模型輸入作為重建目標。</p>
+    <p>這份快照包含 RETFound 與 ConvNeXtV2 相關實驗程式，但已儲存的圖片沒有附帶足以確認訓練 epoch、checkpoint 或確切模型變體的完整紀錄。因此此頁不將圖片歸為某個最佳模型，也不顯示推算的準確率。</p>
+    <p>介面使用中性影像編號；原始檔名與檔案雜湊保留於本機追溯紀錄。研究影像只在本機預覽提供，不包含在靜態網站建置中。</p>
+    <p>相關已發表研究：<a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">TVST 2025 · 半監督 PCV 定位 ↗</a>。我在該論文為第二作者，負責影像後處理並參與跨院資料整理、研究討論與撰寫；此互動頁呈現的是另一份自監督實驗快照。</p>
+  </details>
+</Site>
+<script>
+  const base = import.meta.env.BASE_URL;
+  const get = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const select = get<HTMLSelectElement>('vision-case');
+  const modes = get<HTMLFieldSetElement>('view-modes');
+  const reset = get<HTMLButtonElement>('vision-reset');
+  const retry = get<HTMLButtonElement>('vision-retry');
+  const status = get('vision-status');
+  const content = get('vision-content');
+  const reconstruction = get<HTMLSelectElement>('reconstruction');
+  const slider = get<HTMLInputElement>('reveal');
+  const roles = ['input', 'teacher', 'student'] as const;
+  type Example = {id: string; label: string; width: number; height: number; images: Record<typeof roles[number], string>};
+  let records: Example[] = [];
+  let current: Example | undefined;
+  function setBusy(busy: boolean) {
+    select.disabled = modes.disabled = reset.disabled = retry.disabled = busy;
+    content.setAttribute('aria-busy', String(busy));
+  }
+  function setReveal() {
+    document.querySelector<HTMLElement>('.wipe-frame')!.style.setProperty('--reveal', slider.value+'%');
+    get('reveal-value').textContent = slider.value+'%';
+  }
+  function setOutput() {
+    if (!current) return;
+    const role = reconstruction.value === 'student' ? 'student' : 'teacher';
+    const label = role === 'teacher' ? 'Teacher' : 'Student';
+    get<HTMLImageElement>('wipe-output').src = base+'demo-data/vision/'+current.images[role];
+    get<HTMLImageElement>('wipe-output').alt = current.label+' · '+label+' 重建';
+    document.querySelector('.label-output')!.textContent = label+' 重建';
+  }
+  function setMode() {
+    const wipe = document.querySelector<HTMLInputElement>('input[name="view-mode"]:checked')!.value === 'wipe';
+    get('side-view').hidden = wipe;
+    get('wipe-view').hidden = !wipe;
+  }
+  function preload(url: string) {
+    return new Promise<void>((resolve, reject) => {
+      const img = new Image();
+      const timer = setTimeout(() => { img.onload = img.onerror = null; reject(new Error('timeout')); }, 8000);
+      img.onload = () => { clearTimeout(timer); resolve(); };
+      img.onerror = () => { clearTimeout(timer); reject(new Error('image')); };
+      img.src = url;
+    });
+  }
+  async function render() {
+    const item = records.find(c => c.id === select.value);
+    if (!item) return;
+    setBusy(true); retry.hidden = true; content.hidden = true;
+    status.textContent = '正在讀取 '+item.label+' 的三張對照影像…';
+    try {
+      await Promise.all(roles.map(role => preload(base+'demo-data/vision/'+item.images[role])));
+      current = item;
+      for (const role of roles) {
+        const img = get<HTMLImageElement>(role+'-image');
+        img.src = base+'demo-data/vision/'+item.images[role];
+        img.alt = item.label+' · '+({input:'輸入參照', teacher:'Teacher 重建', student:'Student 重建'}[role]);
+      }
+      get<HTMLImageElement>('wipe-input').src = get<HTMLImageElement>('input-image').src;
+      get<HTMLImageElement>('wipe-input').alt = item.label+' · 輸入參照';
+      setOutput(); setMode(); setReveal();
+      const url = new URL(location.href); url.searchParams.set('case', item.id);
+      history.replaceState(null, '', url);
+      get<HTMLAnchorElement>('vision-link').href = url.pathname+url.search;
+      status.textContent = item.label+' · 已讀取輸入、Teacher 與 Student 的既存輸出。';
+      content.hidden = false;
+    } catch {
+      status.textContent = '這組影像未完整載入，請重試或切換其他影像。';
+      retry.hidden = false;
+    } finally { setBusy(false); }
+  }
+  async function load() {
+    setBusy(true); retry.hidden = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const response = await fetch(base+'demo-data/vision/manifest.json', {signal: controller.signal});
+      if (!response.ok) throw new Error('manifest');
+      const data = await response.json();
+      if (!Array.isArray(data.cases) || data.cases.length !== 3 || !data.cases.every((c: Example, i: number) => c.id === `case-0${i+1}` && typeof c.label === 'string' && c.width === 224 && c.height === 224 && roles.every(role => c.images?.[role] === `${c.id}-${role}.png`))) throw new Error('schema');
+      records = data.cases;
+      select.replaceChildren(...records.map(c => new Option(c.label, c.id)));
+      const requested = new URL(location.href).searchParams.get('case');
+      select.value = records.some(c => c.id === requested) ? requested! : 'case-01';
+    } catch {
+      status.textContent = '目前沒有可讀取的研究影像。公開版本保留研究說明；本機預覽可重新載入。';
+      select.replaceChildren(new Option('研究影像未載入', ''));
+      retry.hidden = false; retry.disabled = false;
+      content.setAttribute('aria-busy', 'false');
+      return;
+    } finally { clearTimeout(timeout); }
+    await render();
+  }
+  select.addEventListener('change', render);
+  modes.addEventListener('change', setMode);
+  reconstruction.addEventListener('change', setOutput);
+  slider.addEventListener('input', setReveal);
+  retry.addEventListener('click', () => records.length ? render() : load());
+  reset.addEventListener('click', async () => {
+    select.value = 'case-01'; reconstruction.value = 'teacher'; slider.value = '50';
+    document.querySelector<HTMLInputElement>('input[name="view-mode"][value="side"]')!.checked = true;
+    await render(); select.focus();
+  });
+  if (import.meta.env.DEV) {
+    load();
+  } else {
+    setBusy(true); retry.hidden = true;
+    status.textContent = '公開版提供實驗方法與來源說明；研究重建影像僅於本機展示。';
+    select.replaceChildren(new Option('影像僅供本機展示', ''));
+    content.setAttribute('aria-busy', 'false');
+  }
+</script>
+<style>
+  .explorer{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:48px}.explorer-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.explorer-heading .eyebrow{margin:0 0 6px}.explorer-heading h2{margin-bottom:12px}.local-label{background:var(--tint);color:var(--primary);padding:5px 12px;border-radius:30px;font-size:14px;font-weight:650}.scope-note{font-size:15px;max-width:850px}.viewer-controls{display:flex;gap:20px;align-items:end;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:22px;margin-top:24px}.field{display:grid;gap:6px}.field label,legend{font-weight:650;font-size:14px}.viewer-controls fieldset{border:0;padding:0;margin:0;display:flex;gap:16px;align-items:center;min-height:70px}.viewer-controls fieldset label{min-height:44px;display:flex;align-items:center;gap:6px}.viewer-controls legend{margin-bottom:5px}input[type=radio]{accent-color:var(--primary);width:18px;height:18px}select,button{min-height:44px;border:1px solid var(--control);border-radius:8px;background:var(--surface);color:var(--ink);padding:8px 14px}button:hover{background:var(--tint)}#vision-status{font-size:14px;margin:18px 0;color:var(--muted)}.image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.image-grid figure{margin:0;min-width:0}.image-grid figcaption{display:grid;gap:4px;margin:0 0 12px}.image-grid figcaption span{font-size:14px;color:var(--muted)}.image-grid img{width:100%;height:auto;background:#0f172a;border-radius:8px;display:block}.viewer-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:18px;font-size:14px}.viewer-footer p{margin:0}.viewer-footer a{min-height:44px;display:inline-flex;align-items:center}.wipe-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.wipe-frame{position:relative;width:min(100%,520px);aspect-ratio:1;margin:auto;background:#0f172a;overflow:hidden;border-radius:8px}.wipe-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}#wipe-input{clip-path:inset(0 calc(100% - var(--reveal)) 0 0)}.wipe-line{position:absolute;top:0;bottom:0;left:var(--reveal);width:2px;background:#fff;transform:translateX(-1px)}.image-label{position:absolute;bottom:12px;padding:4px 9px;border-radius:4px;background:#0f172ae6;color:white;font-size:13px}.label-input{left:12px}.label-output{right:12px}.range-control{max-width:520px;margin:18px auto 0}.range-control label{display:flex;justify-content:space-between;gap:12px;font-weight:600}.range-control input{width:100%;min-height:44px;accent-color:var(--primary);margin:0}.range-control p{font-size:14px;margin:0}.reading-guide{display:grid;grid-template-columns:1fr 1fr;gap:48px}.reading-guide ol{list-style:none;padding:0;margin:0;display:grid;gap:20px;counter-reset:step}.reading-guide li{counter-increment:step;display:grid;grid-template-columns:32px 1fr;column-gap:12px}.reading-guide li:before{content:counter(step,decimal-leading-zero);grid-row:1/3;color:var(--primary);font-size:14px;font-weight:700}.reading-guide li span{grid-column:2;color:var(--muted);font-size:15px}.source-details{padding:16px 0 48px;border-top:1px solid var(--border)}.source-details p{max-width:800px}.source-details code{font-size:13px;overflow-wrap:anywhere}@media(max-width:720px){.explorer{padding:18px}.image-grid{grid-template-columns:1fr;gap:24px}.image-grid figure{max-width:420px;width:100%;margin:auto}.reading-guide{grid-template-columns:1fr;gap:24px}.viewer-controls{gap:12px}.viewer-controls fieldset{flex-wrap:wrap;gap:8px 12px}.viewer-controls label{font-size:14px}.local-label{font-size:13px}}
+</style>

@@ -1,0 +1,16 @@
+node_modules/
+.env*
+.DS_Store
+.artifacts/
+portfolio/dist/
+portfolio/.astro/
+portfolio/public/coursework/
+portfolio/public/demo-data/
+cloudflare/.wrangler/
+cloudflare/.dev.vars*
+cloudflare/worker-configuration.d.ts
+cloudflare/public/bitoguard/
+products/bitoguard/.next/
+products/bitoguard/out/
+products/bitoguard/next-env.d.ts
+*.tsbuildinfo

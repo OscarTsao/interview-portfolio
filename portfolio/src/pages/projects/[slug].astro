@@ -1,0 +1,32 @@
+---
+import Site from '../../layouts/Site.astro';
+import { projects } from '../../data/projects';
+import { Image } from 'astro:assets';
+import { projectImages } from '../../data/project-images';
+export function getStaticPaths(){return Object.keys(projects).map(slug=>({params:{slug}}));}
+const {slug}=Astro.params;
+const base=import.meta.env.BASE_URL;
+const demo=import.meta.env.PUBLIC_DEMO_ORIGIN || 'http://127.0.0.1:8787';
+const project=projects[slug!];
+const previewImage=projectImages[slug!];
+const url=project.external?demo+project.demoPath:base+project.demoPath;
+const demoLabel=slug==='vision'&&!import.meta.env.DEV?'研究方法與來源':project.demoLabel;
+---
+<Site title={project.title+' — Yu-Ning Tsao'} description={project.intro} image={previewImage?.src || (project.image?'images/'+project.image:undefined)}>
+<a class="back" href={base+'#work'}>← 回到作品集</a>
+<section class="case-hero"><p class="eyebrow">{project.category}</p><h1>{project.title}</h1><p>{project.intro}</p>{project.contribution&&<p class="contribution">{project.contribution}</p>}<p class="muted">{project.status}</p><div class="links"><a class="button" href={url} target="_blank" rel="noopener noreferrer">{demoLabel} ↗</a><a href="#walkthrough">先看操作指引 ↓</a></div></section>
+{project.image&&<figure class="project-figure"><a href={previewImage?.src || base+'images/'+project.image} target="_blank" rel="noopener noreferrer" aria-label={'放大 '+project.title+' 展示圖片'}>{previewImage?<Image class="preview-image" src={previewImage} alt={project.title+' 實際展示介面'} width={1280} widths={[640,960,1280]} sizes="(max-width: 1168px) calc(100vw - 48px), 1120px" format="webp" quality={90}/>:<img class="preview-image" src={base+'images/'+project.image} alt="PCV 分割研究任務圖解，非模型結果" width="800" height="520"/>}</a><figcaption class="caption">{project.status}。點擊圖片可放大；下方有流程與範圍說明。</figcaption></figure>}
+<section class="case-grid">
+<aside><dl class="case-meta"><dt>專案脈絡</dt><dd>{project.context}</dd><dt>原專案技術</dt><dd>{project.stack}</dd><dt>展示方式</dt><dd>{project.status}</dd></dl><nav class="case-nav" aria-label="案例段落"><a href="#problem">問題與流程</a><a href="#walkthrough">操作指引</a><a href="#decisions">技術取捨</a><a href="#evidence">成果與驗證</a><a href="#scope">展示範圍</a></nav></aside>
+<div class="prose">
+<section id="problem"><h2>問題與核心流程</h2><p>{project.problem}</p><ul>{project.implementation.map(item=><li>{item}</li>)}</ul>
+{slug==='hied'&&<ol class="method-flow" aria-label="HiED 分開檢視的三種結果"><li><strong>候選排序</strong><span>診斷路徑把哪些候選排在前面？</span></li><li><strong>準則相容集合</strong><span>準則檢查沒有排除哪些診斷？</span></li><li><strong>最終主要輸出</strong><span>系統最後選擇輸出什麼？</span></li></ol>}
+{slug==='bitoguard'&&<ol class="method-flow" aria-label="BitoGuard 核心任務"><li><strong>找到警示</strong><span>依風險選擇待審查帳戶。</span></li><li><strong>檢視證據</strong><span>連結帳戶、事件、關聯圖與報告。</span></li><li><strong>記錄處置</strong><span>選擇下一步並保留案件狀態。</span></li></ol>}
+</section>
+<section id="walkthrough"><h2>{slug==='vision'&&!import.meta.env.DEV?'本機展示操作流程':'建議先這樣操作'}</h2>{slug==='vision'&&!import.meta.env.DEV&&<p>以下影像操作於本機提供；公開頁可閱讀研究方法、資料來源與個人貢獻。</p>}<ol class="step-list">{project.steps.map(step=><li>{step}</li>)}</ol><a class="button" href={url} target="_blank" rel="noopener noreferrer">{demoLabel} ↗</a><details><summary>如果現在無法開啟 Demo</summary><p>可以先沿著本頁的操作流程、設計取捨與展示範圍了解作品，再從上方入口重新嘗試。</p></details></section>
+<section id="decisions"><h2>技術選擇與取捨</h2>{project.decisions.map(item=><div><h3>{item.title}</h3><p>{item.text}</p></div>)}</section>
+<section id="evidence"><h2>成果與驗證</h2>{project.evidence.map(item=><div><h3>{item.title}</h3><p>{item.text}</p></div>)}{slug==='vision'&&<p><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀 TVST 2025 論文 ↗</a> · DOI: 10.1167/tvst.14.10.15</p>}<p><a href={base+'engineering/'}>查看展示系統的架構與驗證範圍 →</a></p></section>
+{project.comparison&&<section id="comparison"><h2>原版與目前移植差異</h2><div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的功能對照表"><table><thead><tr><th scope="col">功能</th><th scope="col">原作</th><th scope="col">目前展示原型</th></tr></thead><tbody>{project.comparison.map(row=><tr>{row.map((cell,i)=>i===0?<th scope="row">{cell}</th>:<td>{cell}</td>)}</tr>)}</tbody></table></div><p>先保留原產品的操作與語義，再決定適合的運行環境。此表列出需要補齊的項目，不把原型當作完整移植。</p></section>}
+<section id="scope"><h2>目前展示範圍</h2><p class="note">{project.boundary}</p>{slug==='hied'&&<p>資料來源：<a href="https://huggingface.co/datasets/mirobody/LingxiDiag-16K" target="_blank" rel="noopener noreferrer">LingxiDiag-16K ↗</a>。只呈現必要的案例欄位，沒有公開訪談逐字稿。</p>}<p>想深入討論實作、部署或研究方法，歡迎<a href="mailto:yuning.tsao8812@gmail.com">透過 Email 聯絡我</a>。</p></section>
+</div></section></Site>
+<style>.project-figure{margin:0}.contribution{padding-left:16px;border-left:3px solid var(--primary);color:var(--muted)}.case-nav{flex-direction:column;gap:0}.prose section+section{margin-top:36px}.prose section>h2{padding-top:8px}.case-hero{max-width:880px}@media(max-width:720px){.case-nav{flex-direction:row;gap:0 20px}.case-grid{gap:12px}.contribution{font-size:16px!important}}</style>

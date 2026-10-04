@@ -1,0 +1,61 @@
+---
+import Site from '../layouts/Site.astro';
+import { Image } from 'astro:assets';
+import profile from '../assets/profile.png';
+import { projects, featured } from '../data/projects';
+import { projectImages } from '../data/project-images';
+const base=import.meta.env.BASE_URL;
+const demo=import.meta.env.PUBLIC_DEMO_ORIGIN || 'http://127.0.0.1:8787';
+const linkedin='https://www.linkedin.com/in/喻寧-曹-4a06141a4';
+const webProjects=['maze','ecommerce','nutrition','realtime'];
+const demoUrl=(slug:string)=>projects[slug].external?demo+projects[slug].demoPath:base+projects[slug].demoPath;
+---
+<Site>
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="eyebrow">SOFTWARE ENGINEERING · ML · CLOUD</p>
+      <h1>曹喻寧<span class="name-en">Yu-Ning Tsao</span></h1>
+      <p class="position">從資料與模型，到可操作的系統。</p>
+      <p class="bio">我是 Yu-Ning，也可以叫我 Oscar。資工碩士，聚焦機器學習與軟體系統，做過金融異常分析、LLM 研究與 AWS 部署。</p>
+      <div class="links"><a class="button" href="#work">探索我的作品 ↓</a><a href="#about">關於我 →</a></div>
+      <p class="intro-footnote">Python / C++ · AI / ML · Linux / Docker / AWS</p>
+    </div>
+    <figure class="portrait"><Image src={profile} alt="曹喻寧 Yu-Ning Tsao 個人照片" width={640} widths={[320,640,960]} sizes="(max-width: 720px) 300px, 370px" format="webp" quality={85} loading="eager" fetchpriority="high"/><figcaption><span>Yu-Ning Tsao</span><span>Engineering &amp; research</span></figcaption></figure>
+  </section>
+  <section id="work" class="section">
+    <div class="section-title"><div><p class="eyebrow">SELECTED WORK</p><h2>把研究與想法，做成可以探索的作品。</h2></div></div>
+    <div class="work-list">
+      {featured.map(slug=>{const p=projects[slug];return <article class="work">
+        <a class="work-image" href={base+'projects/'+slug+'/'} aria-label={'閱讀 '+p.title+' 案例'}><Image src={projectImages[slug]} alt={p.title+' 實際展示介面'} width={640} widths={[320,640,960]} sizes="(max-width: 720px) calc(100vw - 40px), (max-width: 1168px) 46vw, 548px" format="webp" quality={85} loading="lazy"/></a>
+        <div class="work-copy"><p class="eyebrow">{p.category}</p><h3><a href={base+'projects/'+slug+'/'}>{p.title}</a></h3><p>{p.intro}</p><p class="role">{slug==='bitoguard'?'我的主要工作：ML、特徵工程與 AWS 部署':'碩士論文：LLM 推理、評估與可追溯證據'}</p><p class="status">{p.status}</p><p class="tag">{p.stack}</p><div class="links"><a class="text-link" href={base+'projects/'+slug+'/'}>閱讀案例 →</a><a href={demoUrl(slug)} target="_blank" rel="noopener noreferrer">{p.demoLabel} ↗</a></div></div>
+      </article>;})}
+    </div>
+    <article class="work research-work" id="publication">
+      <a class="research-image work-image" href={base+'projects/vision/'} aria-label="閱讀 Ophthalmic Imaging 研究案例"><img src={base+'images/vision-method.svg'} alt="PCV 分割任務示意：FA 原圖與參考標註；模型預測待補，非研究結果影像" width="800" height="520" loading="lazy"/></a>
+      <div class="work-copy"><p class="eyebrow">COMPUTER VISION / RESEARCH</p><h3><a href={base+'projects/vision/'}>Ophthalmic Imaging</a></h3><p>{import.meta.env.DEV?'研究 PCV 病灶在 FA 影像中的分割與定位。互動展示對照原圖與資料集標註，呈現模型需要辨識的區域。':'研究 PCV 病灶在 FA 影像中的分割與定位。公開頁介紹研究方法、個人貢獻與資料來源；影像疊圖於本機展示。'}</p><p class="status">{import.meta.env.DEV?'FA 與病灶標註 · 模型預測待補':'研究方法與來源 · 影像僅供本機展示'}</p><div class="links"><a class="text-link" href={base+'projects/vision/'}>閱讀研究案例 →</a><a href={base+'vision/'}>{import.meta.env.DEV?'開啟研究展示 →':'研究方法與來源 →'}</a></div>
+        <div class="publication"><p class="publication-role">相關發表 · TVST 2025 · 第二作者</p><p lang="en">Localization of Polypoidal Choroidal Vasculopathy in Fluorescein Angiography Using Semisupervised Deep Learning With Labeled and Unlabeled Images</p><p>我實作影像後處理，並參與跨院資料整理、研究討論與撰寫。此處以 repo 標註說明任務，尚未重現論文的模型預測。</p><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀期刊論文 ↗</a></div>
+      </div>
+    </article>
+  </section>
+  <section id="coursework" class="section">
+    <div class="section-title"><div><p class="eyebrow">WEB TECHNOLOGIES</p><h2>從瀏覽器互動，到完整應用。</h2></div><p>課程作品 · HW2–HW5</p></div>
+    <div class="web-grid">{webProjects.map(slug=>{const p=projects[slug];return <article class="web-card">
+      <a class="web-image" href={base+'projects/'+slug+'/'} aria-label={'了解 '+p.title}><Image src={projectImages[slug]} alt={p.title+' '+(slug==='maze'?'課程原作遊戲畫面':'目前簡化原型介面，尚未完整移植原作')} width={640} widths={[320,640,960]} sizes="(max-width: 720px) calc(100vw - 40px), (max-width: 1168px) 46vw, 548px" format="webp" quality={85} loading="lazy"/></a>
+      <div class="web-copy"><p class="web-context">{p.context} <span>{slug==='maze'?'原作':'移植原型'}</span></p><h3>{p.title}</h3><p>{p.intro}</p><p class="tag">{p.stack}</p><div class="links"><a href={base+'projects/'+slug+'/'}>實作與範圍 →</a><a href={demoUrl(slug)} target="_blank" rel="noopener noreferrer">{p.demoLabel} ↗</a></div></div>
+    </article>;})}</div>
+    <div class="coursework-note"><p>HW3–HW5 的互動入口目前是簡化原型；介紹頁列出與原版 UI、資料庫、API 與視訊功能的差異。</p><a href={base+'coursework/hw1/index.html'}>HW1 · 最初的個人網站 ↗</a></div>
+  </section>
+  <section id="about" class="section about">
+    <div class="about-intro"><p class="eyebrow">A LITTLE ABOUT ME</p><h2>在工程與研究之間，<br/>把問題往前推一步。</h2><p>從工業工程到資訊工程，我關心資料如何成為可靠的系統。喜歡把模型輸出接到實際操作流程，也重視評估、證據與部署後的行為。</p><p>目前尋找軟體工程、AI／ML、雲端／DevOps 與系統相關機會。</p><div class="links"><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn 經歷 ↗</a><a href={base+'engineering/'}>作品展示架構 →</a></div></div>
+    <div class="about-details"><h3>背景與工具</h3><dl class="background"><dt>學歷</dt><dd><strong>國立中正大學 · 資訊工程碩士</strong><span>2024.09–2026.08</span></dd><dd><strong>國立陽明交通大學 · 工業工程與管理學士</strong><span>2019.09–2023.06</span></dd><dt>程式與資料</dt><dd>Python · SQL / MySQL · C++</dd><dt>AI / ML</dt><dd>PyTorch · scikit-learn · LLM / RAG · vLLM</dd><dt>工程與雲端</dt><dd>Git · Linux · Docker · AWS</dd><dt>語言</dt><dd>中文母語 · 英文 TOEIC 955/990 · 法文日常對話</dd></dl></div>
+  </section>
+  <section id="contact" class="contact section">
+    <div><p class="eyebrow">GET IN TOUCH</p><h2>聊聊工程、研究與下一個問題。</h2><p>歡迎交流工作機會與技術問題。</p><p class="email">yuning.tsao8812@gmail.com</p></div>
+    <div class="links"><a class="button" href="mailto:yuning.tsao8812@gmail.com">Email 聯絡 ↗</a><a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="https://github.com/OscarTsao" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
+  </section>
+</Site>
+<style>
+.intro{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr);gap:80px;align-items:center;padding:56px 0 64px}.intro h1{font-size:clamp(44px,5vw,64px);margin-bottom:20px}.name-en{display:block;font-size:clamp(30px,3.4vw,44px);letter-spacing:-1.2px;margin-top:10px;font-weight:600}.position{font-size:24px;color:var(--ink);font-weight:550;margin-bottom:16px}.bio{max-width:580px;font-size:17px;margin-bottom:24px}.intro-footnote{font-size:13px;margin:22px 0 0}.portrait{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 12px 30px #0f172a08;max-width:300px;width:100%;justify-self:center}.portrait img{display:block;width:100%;height:auto}.portrait figcaption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:14px 18px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}.portrait figcaption span:first-child{color:var(--ink);font-weight:650}.work-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.work{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-width:0}.work-image{display:block;overflow:hidden;background:var(--tint);border-bottom:1px solid var(--border)}.work-image img{display:block;width:100%;height:auto;aspect-ratio:1280/820;object-fit:cover}.work-copy{padding:26px}.work-copy .eyebrow{font-size:11px;margin-bottom:10px}.work-copy h3{font-size:29px;margin-bottom:12px}.work-copy h3 a{text-decoration:none}.work-copy>p{font-size:16px;margin-bottom:12px}.work-copy .role{font-size:14px;color:var(--ink);font-weight:600}.work-copy .tag,.work-copy .status{font-size:13px}.status{display:inline-block;background:var(--tint);padding:4px 10px;border-radius:5px}.work-copy .links{border-top:1px solid var(--border);padding-top:12px;margin-top:18px;font-size:14px;gap:8px 22px}.research-work{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr);margin-top:24px;align-items:stretch}.research-image{border:0;border-right:1px solid var(--border);display:flex;align-items:center;background:#edf3ff;padding:16px}.research-image img{object-fit:contain;aspect-ratio:800/520}.research-work .work-copy>p{max-width:550px}.publication{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}.publication p{font-size:14px;margin-bottom:10px}.publication .publication-role{color:var(--ink);font-weight:650}.publication p[lang]{font-size:13px;line-height:1.65}.publication a{font-size:14px;min-height:44px;display:inline-flex;align-items:center}.web-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.web-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-width:0}.web-image{display:block;background:var(--tint);border-bottom:1px solid var(--border)}.web-image img{display:block;width:100%;height:auto;aspect-ratio:1280/820;object-fit:cover}.web-copy{padding:24px}.web-context{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px}.web-context span{color:var(--primary);background:var(--tint);padding:2px 8px;border-radius:4px}.web-copy h3{margin-bottom:12px}.web-copy>p:not(.web-context){font-size:15px}.web-copy .tag{font-size:13px}.web-copy .links{font-size:14px;gap:8px 20px;border-top:1px solid var(--border);padding-top:12px}.coursework-note{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:24px;font-size:14px}.coursework-note p{max-width:740px;margin:0}.coursework-note a{min-height:44px;display:inline-flex;align-items:center}.about{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px}.about-intro p{max-width:500px}.about-details{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px}.about-details h3{font-size:19px;margin-bottom:16px}.background{margin:0}.background dt{font-size:13px;font-weight:700;color:var(--ink);margin-top:18px}.background dt:first-child{margin-top:0}.background dd{margin:5px 0;color:var(--muted);font-size:14px}.background dd strong,.background dd span{display:block}.background dd strong{font-weight:550}.background dd span{font-size:13px}.contact{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}.contact h2{font-size:27px}.contact p{margin-bottom:12px}.contact .links{gap:12px 18px}.email{font-size:14px;overflow-wrap:anywhere}
+@media(max-width:900px){.intro{gap:36px}.portrait{max-width:280px}.position{font-size:22px}.about{gap:32px}.research-work{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}}
+@media(max-width:720px){.intro{grid-template-columns:1fr;gap:28px;padding:32px 0 40px}.intro h1{font-size:46px}.position{font-size:20px}.bio{font-size:16px}.portrait{width:min(100%,240px);justify-self:start}.work-list,.web-grid,.about,.research-work{grid-template-columns:1fr}.work-copy,.web-copy{padding:20px}.work-copy h3{font-size:26px}.research-image{border-right:0;border-bottom:1px solid var(--border);padding:0}.research-image img{max-height:260px}.about{gap:24px}.about-details{padding:22px}.section-title h2{font-size:25px}.contact h2{font-size:24px}}
+</style>

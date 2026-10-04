@@ -1,0 +1,9 @@
+{
+  "source": "HiED-Handover annotation; LingxiDiag-16K; CC BY-NC 4.0",
+  "selection": "Three cases from the 20-case D3-I-S disagreement annotation set; not representative of overall performance",
+  "cases": [
+    { "id": "P001", "sourceCaseId": "302736044", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F41"], "primary": "F32", "ranked": ["F32", "F41.1", "F51", "F39", "F98"], "verification": "emit_only" },
+    { "id": "P010", "sourceCaseId": "353853459", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F32"], "primary": "F20", "ranked": ["F20", "F32", "F98", "F41.2", "F51"], "verification": "emit_only" },
+    { "id": "P015", "sourceCaseId": "364295726", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F41"], "primary": "F32", "ranked": ["F32", "F43.2", "F41.1", "F51", "F39"], "verification": "emit_only" }
+  ]
+}

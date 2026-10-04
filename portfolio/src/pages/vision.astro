@@ -1,0 +1,168 @@
+---
+import Site from '../layouts/Site.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Site title={import.meta.env.DEV?'TVST 研究脈絡 — PCV 病灶標註展示':'TVST 研究脈絡 — PCV 分割方法與來源'} description="理解 FA 影像中的 PCV 分割任務、研究貢獻與資料來源；影像疊圖僅於本機展示。">
+<a class="back" href={base+'projects/vision/'}>← 回到研究介紹</a>
+<section class="case-hero">
+  <p class="eyebrow">OPHTHALMIC IMAGING / PCV SEGMENTATION</p>
+  <h1>{import.meta.env.DEV?<>從 FA 影像，<br/>看見病灶標註範圍。</>:<>從 FA 影像，<br/>理解病灶分割。</>}</h1>
+  <p>{import.meta.env.DEV?'TVST 研究關注 PCV 病灶的分割與定位。先對照原圖與參考標註，理解模型需要預測的區域。':'TVST 研究關注 PCV 病灶的分割與定位。這裡說明研究任務、我的貢獻與資料來源；原圖及標註的互動比較於本機提供。'}</p>
+  <div class="links"><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀 TVST 論文 ↗</a><a href="#source">展示來源與限制 ↓</a></div>
+</section>
+<section class="seg-viewer" aria-label="PCV 病灶標註展示">
+  <div class="viewer-heading"><div><p class="eyebrow">IMAGE &amp; REFERENCE MASK</p><h2>原圖與病灶標註</h2></div><span class="badge">{import.meta.env.DEV?'本機資料預覽':'公開研究說明'}</span></div>
+  <p class="scope">{import.meta.env.DEV?'目前顯示 repo 附帶的參考標註。':'公開版保留研究方法與來源說明；原圖與參考標註於本機展示。'}參考標註<strong>不是模型預測</strong>，這三張影像與論文案例的對應仍待確認。</p>
+  <fieldset id="seg-controls" disabled hidden={!import.meta.env.DEV}>
+    <legend class="sr-only">影像與標註控制</legend>
+    <div class="field"><label for="seg-case">選擇影像</label><select id="seg-case"><option>載入中…</option></select></div>
+    <div class="field"><label for="mask-mode">檢視方式</label><select id="mask-mode"><option value="overlay">標註疊圖</option><option value="mask">二值遮罩</option></select></div>
+    <label class="check"><input id="mask-visible" type="checkbox" checked/> 顯示標註</label>
+    <div class="field opacity-field"><label for="opacity">疊圖不透明度 <output id="opacity-value" for="opacity">45%</output></label><input id="opacity" type="range" min="0" max="100" value="45"/></div>
+    <button id="seg-reset" type="button">重設檢視</button>
+  </fieldset>
+  <p id="seg-status" role="status">{import.meta.env.DEV?'正在載入原圖與標註…':'公開版提供研究方法與來源說明；研究影像與紅色病灶標註僅於本機展示。'}</p><button id="seg-retry" type="button" hidden>重新載入</button>
+  <div id="seg-content" hidden aria-busy="true">
+    <div class="image-pair">
+      <figure><figcaption><strong>FA 原圖</strong><span>儲存庫中的影像，保留原始尺寸</span></figcaption><canvas id="original-canvas" role="img" aria-label="所選 FA 原圖"></canvas></figure>
+      <figure><figcaption><strong id="mask-title">參考標註疊圖</strong><span id="mask-legend"><i aria-hidden="true"></i>紅色：資料集標註區域</span></figcaption><canvas id="seg-canvas" role="img" aria-label="FA 原圖與病灶參考標註疊圖"></canvas></figure>
+    </div>
+    <div class="viewer-footer"><p id="dimensions"></p><a id="seg-link" href="?case=seg-01">此影像連結 →</a></div>
+  </div>
+  <noscript><p>互動疊圖需要 JavaScript。下方仍可閱讀研究任務與資料來源。</p></noscript>
+</section>
+<section class="prediction-note" aria-labelledby="prediction-title">
+  <div><p class="eyebrow">MODEL PREDICTION</p><h2 id="prediction-title">分割預測：尚待補齊來源</h2></div>
+  <p>這份快照中尚未找到能與影像配對、確認版本的病灶分割預測或訓練完成權重。因此目前不顯示模型遮罩、Dice 或後處理成效。</p>
+  <p>補齊輸出後，應比較同一影像的<strong>參考標註、模型預測及後處理結果</strong>，再呈現誤差與對應指標。</p>
+</section>
+<section id="source" class="section source">
+  <div><p class="eyebrow">TASK &amp; PROVENANCE</p><h2>理解分割，也看清證據。</h2><p>原圖回答「模型看到了什麼」；參考標註回答「資料集要模型找出哪個區域」。兩者能說明任務，模型能力仍需另以預測與評估證明。</p><p>我在相關 TVST 論文為第二作者，負責影像後處理，並參與跨院資料整理、研究討論與撰寫。</p></div>
+  <div><h3>本次資料</h3><ul><li>來源：Handover_Self-supervised，版本 <code>344cd81</code>。</li><li>選自 repo 的 <code>All/FA/test/img</code> 與 <code>mask</code>，按相同檔名配對。</li><li>三張示例用於介面展示，不代表三位病患或論文測試集的完整評估。</li><li>遮罩為 0／255 二值資料；疊圖只為標註加色，不修改原始影像與標註。</li><li>私人影像僅於本機提供，靜態網站建置不包含這些檔案。</li></ul></div>
+</section>
+<aside class="appendix"><div><p class="eyebrow">EXPERIMENT APPENDIX</p><h3>自監督影像重建</h3><p>先前的 Teacher／Student 圖片是重建實驗產物，保留於附錄，與分割任務分開。</p></div><a href={base+'reconstruction/'}>查看重建附錄 →</a></aside>
+</Site>
+<script>
+const base = import.meta.env.BASE_URL;
+const get = <T extends HTMLElement>(id:string) => document.getElementById(id) as T;
+const controls=get<HTMLFieldSetElement>('seg-controls');
+const select=get<HTMLSelectElement>('seg-case');
+const mode=get<HTMLSelectElement>('mask-mode');
+const visible=get<HTMLInputElement>('mask-visible');
+const opacity=get<HTMLInputElement>('opacity');
+const status=get('seg-status');
+const content=get('seg-content');
+const retry=get<HTMLButtonElement>('seg-retry');
+const canvas=get<HTMLCanvasElement>('seg-canvas');
+const original=get<HTMLCanvasElement>('original-canvas');
+type Example={id:string;label:string;width:number;height:number;images:{image:string;mask:string};prediction:null};
+let records:Example[]=[];
+let current:Example|undefined;
+let bitmap:ImageBitmap|undefined;
+let maskPixels:Uint8ClampedArray|undefined;
+function draw(){
+  if(!current||!bitmap||!maskPixels)return;
+  const ctx=canvas.getContext('2d')!;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const maskOnly=mode.value==='mask';
+  if(maskOnly){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);}
+  else ctx.drawImage(bitmap,0,0);
+  const layer=new ImageData(current.width,current.height);
+  if(visible.checked){
+    for(let i=0;i<maskPixels.length;i+=4){
+      if(maskPixels[i]===255){
+        layer.data[i]=255;layer.data[i+1]=maskOnly?255:0;layer.data[i+2]=maskOnly?255:0;
+        layer.data[i+3]=255;
+      }
+    }
+    const overlay=document.createElement('canvas');overlay.width=current.width;overlay.height=current.height;
+    overlay.getContext('2d')!.putImageData(layer,0,0);
+    ctx.globalAlpha=maskOnly?1:Number(opacity.value)/100;ctx.drawImage(overlay,0,0);ctx.globalAlpha=1;
+  }
+  opacity.disabled=maskOnly||!visible.checked;
+  get('opacity-value').textContent=opacity.value+'%';
+  get('mask-title').textContent=maskOnly?'參考標註二值遮罩':'參考標註疊圖';
+  get('mask-legend').textContent=!visible.checked?'標註已隱藏':maskOnly?'白色：標註區域；黑色：其餘區域':'紅色：資料集標註區域';
+  canvas.setAttribute('aria-label',current.label+(maskOnly?'的二值參考標註':'的 FA 與參考標註疊圖')+(!visible.checked?'，標註已隱藏':''));
+}
+async function loadPair(item:Example,signal:AbortSignal){
+  const images:ImageBitmap[]=[];
+  try{
+    for(const role of ['image','mask'] as const){
+      const response=await fetch(base+'demo-data/segmentation/'+item.images[role],{signal});
+      if(!response.ok)throw Error('image');
+      const decoded=await createImageBitmap(await response.blob());
+      images.push(decoded);
+      if(decoded.width!==item.width||decoded.height!==item.height)throw Error('dimensions');
+    }
+    return images;
+  }catch(error){images.forEach(image=>image.close());throw error;}
+}
+async function render(){
+  const item=records.find(c=>c.id===select.value);if(!item)return;
+  controls.disabled=true;retry.hidden=true;content.hidden=true;content.setAttribute('aria-busy','true');
+  status.textContent='正在載入 '+item.label+' 的原圖與標註…';
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
+  let pair:ImageBitmap[]=[];
+  try{
+    pair=await loadPair(item,controller.signal);
+    const mask=document.createElement('canvas');mask.width=item.width;mask.height=item.height;
+    mask.getContext('2d')!.drawImage(pair[1],0,0);
+    const pixels=mask.getContext('2d')!.getImageData(0,0,item.width,item.height).data;
+    for(let i=0;i<pixels.length;i+=4){
+      if(![0,255].includes(pixels[i])||pixels[i]!==pixels[i+1]||pixels[i]!==pixels[i+2]||pixels[i+3]!==255)throw Error('mask encoding');
+    }
+    bitmap?.close();bitmap=pair[0];pair[1].close();pair=[];
+    current=item;maskPixels=pixels;
+    original.width=canvas.width=item.width;original.height=canvas.height=item.height;
+    original.getContext('2d')!.drawImage(bitmap,0,0);
+    original.setAttribute('aria-label',item.label+' 的 FA 原圖');
+    draw();
+    const url=new URL(location.href);url.searchParams.set('case',item.id);history.replaceState(null,'',url);
+    get<HTMLAnchorElement>('seg-link').href=url.pathname+url.search;
+    get('dimensions').textContent=item.width+' × '+item.height+' px · 同尺寸原圖與標註，未重採樣配對。';
+    status.textContent=item.label+' · 已載入原圖與參考標註；沒有模型預測。';
+    content.hidden=false;
+  }catch{
+    status.textContent='原圖或標註未完整載入，或配對格式不符。請重試或切換其他影像。';retry.hidden=false;
+  }finally{
+    pair.forEach(image=>image.close());clearTimeout(timeout);controls.disabled=false;content.setAttribute('aria-busy','false');
+  }
+}
+async function load(){
+  controls.disabled=true;retry.hidden=true;
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const response=await fetch(base+'demo-data/segmentation/manifest.json',{signal:controller.signal});
+    if(!response.ok)throw Error('manifest');
+    const data=await response.json();
+    if(!Array.isArray(data.cases)||data.cases.length!==3||!data.cases.every((c:Example,i:number)=>c.id==='seg-0'+(i+1)&&typeof c.label==='string'&&Number.isInteger(c.width)&&Number.isInteger(c.height)&&c.width>0&&c.height>0&&c.width<=4096&&c.height<=4096&&c.prediction===null&&c.images?.image===c.id+'-image.png'&&c.images?.mask===c.id+'-mask.png'))throw Error('schema');
+    records=data.cases;select.replaceChildren(...records.map(c=>new Option(c.label,c.id)));
+    const requested=new URL(location.href).searchParams.get('case');
+    select.value=records.some(c=>c.id===requested)?requested!:'seg-01';
+  }catch{
+    status.textContent='本機研究資料尚未提供或無法載入。研究說明仍可閱讀。';
+    select.replaceChildren(new Option('資料未載入',''));retry.hidden=false;content.setAttribute('aria-busy','false');return;
+  }finally{clearTimeout(timeout);}
+  await render();
+}
+select.addEventListener('change',render);
+mode.addEventListener('change',draw);
+visible.addEventListener('change',draw);
+opacity.addEventListener('input',draw);
+retry.addEventListener('click',()=>records.length?render():load());
+get('seg-reset').addEventListener('click',async()=>{
+  select.value='seg-01';mode.value='overlay';visible.checked=true;opacity.value='45';await render();select.focus();
+});
+if(import.meta.env.DEV){
+  load();
+}else{
+  controls.disabled=true;retry.hidden=true;
+  status.textContent='公開版提供研究方法與來源說明；研究影像與紅色病灶標註僅於本機展示。';
+  select.replaceChildren(new Option('影像僅供本機展示',''));
+  content.setAttribute('aria-busy','false');
+}
+</script>
+<style>
+.seg-viewer{padding:28px;border:1px solid var(--border);border-radius:16px;background:var(--surface);margin-bottom:28px}.viewer-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.viewer-heading .eyebrow{margin-bottom:6px}.viewer-heading h2{margin-bottom:12px}.badge{border-radius:24px;background:var(--tint);color:var(--primary);font-size:14px;padding:5px 12px;font-weight:650}.scope{max-width:900px;font-size:15px}.scope strong{color:var(--ink)}#seg-controls{border:0;border-top:1px solid var(--border);padding:22px 0 0;margin:24px 0 0;display:flex;flex-wrap:wrap;gap:16px;align-items:end;min-width:0}.field{display:grid;gap:6px}.field label{font-weight:650;font-size:14px}.check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px}.check input{width:18px;height:18px;accent-color:var(--primary)}button,select{min-height:44px;padding:8px 12px;border:1px solid var(--control);background:var(--surface);border-radius:8px;color:var(--ink)}button:hover{background:var(--tint)}.opacity-field{min-width:180px;max-width:100%}.opacity-field label{display:flex;justify-content:space-between;gap:16px}.opacity-field input{min-height:44px;margin:0;width:100%;accent-color:var(--primary)}#seg-status{font-size:14px;margin:20px 0}.image-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.image-pair figure{margin:0;min-width:0}.image-pair figcaption{display:grid;gap:4px;margin-bottom:12px}.image-pair figcaption span{font-size:14px;color:var(--muted)}canvas{display:block;width:100%;height:auto;background:#000;border-radius:8px}.viewer-footer{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:14px}.viewer-footer p{margin:0}.viewer-footer a{display:inline-flex;align-items:center;min-height:44px}.prediction-note{border:1px dashed var(--control);border-radius:12px;padding:24px;margin-bottom:48px}.prediction-note h2{font-size:23px}.prediction-note p{max-width:850px}.prediction-note p:last-child{margin:0}.source{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px}.source li{color:var(--muted);margin:10px 0}.source ul{padding-left:20px}.source code{overflow-wrap:anywhere;font-size:14px}.appendix{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;border-top:1px solid var(--border);padding:32px 0 48px}.appendix h3{font-size:21px}.appendix p{max-width:740px;margin-bottom:8px}.appendix a{align-self:center;min-height:44px;display:inline-flex;align-items:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:720px){.seg-viewer{padding:18px}.image-pair,.source{grid-template-columns:1fr}.image-pair{gap:24px}#seg-controls{gap:12px}.opacity-field{width:100%}.source{gap:20px}.prediction-note{padding:20px}}
+</style>

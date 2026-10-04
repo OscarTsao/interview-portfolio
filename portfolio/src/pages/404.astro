@@ -1,0 +1,12 @@
+---
+import Site from '../layouts/Site.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Site title="找不到這個頁面 — Yu-Ning Tsao" description="回到作品集，繼續探索工程與研究作品。" noindex>
+  <section class="case-hero">
+    <p class="eyebrow">404 · PAGE NOT FOUND</p>
+    <h1>這個連結已經走遠了。</h1>
+    <p>頁面可能已移動，或網址輸入不完整。你可以回到作品集找到最新入口。</p>
+    <div class="links"><a class="button" href={base+'#work'}>回到作品</a><a href={base+'#contact'}>聯絡我</a></div>
+  </section>
+</Site>

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Maze Game</title>
+    <style>
+      /* ------------------- Global Styles ------------------- */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        margin-top: 20px;
+      }
+      /* ------------------- Control Panel ------------------- */
+      .controls {
+        margin: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+      }
+      label {
+        font-weight: bold;
+      }
+      select,
+      button {
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      select:hover,
+      button:hover {
+        background-color: #ddd;
+      }
+      /* ------------------- Slider Toggle ------------------- */
+      .slider-container {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .slider-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .slider {
+        position: relative;
+        width: 50px;
+        height: 25px;
+        background-color: #ccc;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .slider::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 21px;
+        height: 21px;
+        background-color: white;
+        border-radius: 50%;
+        transition: left 0.3s;
+      }
+      .slider.active {
+        background-color: #66bb6a;
+      }
+      .slider.active::after {
+        left: 27px;
+      }
+      /* ------------------- Maze Container & Cells ------------------- */
+      #maze-container {
+        position: relative;
+        margin: 20px;
+        background-color: white;
+      }
+      .cell {
+        width: 20px;
+        height: 20px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        float: left;
+        position: relative;
+      }
+      /* Icons for start, destination and events */
+      .start {
+        background: center center / cover no-repeat;
+      }
+      .destination {
+        background: url("Images/home.png") center center / cover no-repeat;
+      }
+      .event {
+        background: url("Images/dice.png") center center / cover no-repeat;
+      }
+      /* Player icon style */
+      .player {
+        background: url("Images/key.png") center center / cover no-repeat;
+        width: 100%;
+        height: 100%;
+      }
+      /* Fog overlay style */
+      .fog {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: url("Images/fog.jpg") center center / cover no-repeat;
+        opacity: 0.8;
+        pointer-events: none;
+        width: 100%;
+        height: 100%;
+      }
+      /* Clear floats */
+      .clearfix::after {
+        content: "";
+        clear: both;
+        display: block;
+      }
+      /* ------------------- Replay Button ------------------- */
+      .replay-btn {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .replay-btn img {
+        width: 30px;
+        height: 30px;
+        transition: transform 0.3s;
+      }
+      .replay-btn:hover img {
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Maze Game</h1>
+    <div class="controls">
+      <!-- Dropdown for Event Quantity (0-8) -->
+      <div>
+        <label for="event-select">Events:</label>
+        <select id="event-select">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+      <!-- Dropdown for Difficulty (maze size) -->
+      <div>
+        <label for="difficulty-select">Difficulty:</label>
+        <select id="difficulty-select">
+          <option value="10">10 x 10</option>
+          <option value="15">15 x 15</option>
+          <option value="25">25 x 25</option>
+          <option value="38">38 x 38</option>
+        </select>
+      </div>
+      <!-- Start Button -->
+      <button id="start-btn">Start</button>
+      <!-- Slider toggles for Foggy and Recording Modes -->
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <label for="foggy-mode">Foggy Mode:</label>
+          <div id="foggy-mode" class="slider"></div>
+        </div>
+        <div class="slider-wrapper">
+          <label for="recording-mode">Recording Mode:</label>
+          <div id="recording-mode" class="slider"></div>
+        </div>
+        <div class="slider-wrapper">
+          <label for="canvas-mode">Canvas 2D Engine:</label>
+          <div id="canvas-mode" class="slider active"></div>
+        </div>
+      </div>
+      <!-- Replay Button (green arrow icon) -->
+      <button id="replay-btn" class="replay-btn">
+        <img src="Images/Replay.png" alt="Replay" />
+      </button>
+    </div>
+    <!-- Maze display area -->
+    <div id="maze-container" class="clearfix"></div>
+
+    <script>
+      /* ------------------- Global Variables ------------------- */
+      let maze = [];
+      let mazeSize = 10; // default size (10x10)
+      const cellSize = 20; // size in pixels for each cell
+      let playerPosition = { x: 0, y: 0 };
+      let destinationPosition = { x: 0, y: 0 };
+      let recording = false;
+      let recordedMoves = [];
+      let foggyMode = false;
+      let eventCount = 0;
+      let events = [];
+      let eventsData = [];
+      let visionEffectSteps = 0; // Tracks the remaining steps for vision effects
+      let visionRange = 3; // Current vision range
+      let canPassThroughWalls = false; // Flag to allow passing through walls
+      let startingPosition = { x: 0, y: 0 }; // Index of the starting corner
+
+      // Load events from events.json
+      fetch("events.json")
+        .then((response) => response.json())
+        .then((data) => {
+          eventsData = data;
+        })
+        .catch((error) => console.error("Error loading events.json:", error));
+
+      const mazeContainer = document.getElementById("maze-container");
+      const eventSelect = document.getElementById("event-select");
+      const difficultySelect = document.getElementById("difficulty-select");
+      const startBtn = document.getElementById("start-btn");
+      const foggyToggle = document.getElementById("foggy-mode");
+      const recordingToggle = document.getElementById("recording-mode");
+      const replayBtn = document.getElementById("replay-btn");
+
+      const canvasToggle = document.getElementById("canvas-mode");
+      let canvasMode = true;
+
+      // Preload sprites for Canvas 2D rendering
+      const sprites = {
+        key: new Image(),
+        home: new Image(),
+        dice: new Image()
+      };
+      sprites.key.src = "Images/key.png";
+      sprites.home.src = "Images/home.png";
+      sprites.dice.src = "Images/dice.png";
+
+      /* ------------------- Slider Toggle Logic ------------------- */
+      function toggleSlider(slider) {
+        slider.classList.toggle("active");
+      }
+      foggyToggle.addEventListener("click", () => {
+        toggleSlider(foggyToggle);
+        foggyMode = foggyToggle.classList.contains("active");
+        updateFog();
+      });
+      recordingToggle.addEventListener("click", () => {
+        toggleSlider(recordingToggle);
+        recording = recordingToggle.classList.contains("active");
+        if (recording) {
+          recordedMoves = [];
+          // Record the starting position
+          recordedMoves.push({ x: playerPosition.x, y: playerPosition.y });
+        }
+      });
+      canvasToggle.addEventListener("click", () => {
+        toggleSlider(canvasToggle);
+        canvasMode = canvasToggle.classList.contains("active");
+        renderMaze();
+      });
+
+      /* ------------------- Web Audio API Sound Synthesizer ------------------- */
+      let audioCtx = null;
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+      document.addEventListener('click', initAudio, { once: true });
+      document.addEventListener('keydown', initAudio, { once: true });
+
+      function playSound(type) {
+        if (!audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          if (type === 'move') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.exponentialRampToValueAtTime(120, now + 0.05);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+          } else if (type === 'event') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(554.37, now + 0.06);
+            osc.frequency.setValueAtTime(659.25, now + 0.12);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'win') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.1);
+            osc.frequency.setValueAtTime(783.99, now + 0.2);
+            osc.frequency.setValueAtTime(1046.50, now + 0.3);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            osc.start(now);
+            osc.stop(now + 0.5);
+          }
+        } catch (e) {
+          // Ignore audio errors
+        }
+      }
+
+      /* ------------------- Maze Generation (DFS Algorithm) ------------------- */
+      function generateMaze(size) {
+        maze = [];
+        // Initialize grid cells with walls
+        for (let y = 0; y < size; y++) {
+          let row = [];
+          for (let x = 0; x < size; x++) {
+            row.push({
+              x,
+              y,
+              visited: false,
+              walls: { top: true, right: true, bottom: true, left: true },
+            });
+          }
+          maze.push(row);
+        }
+        function getNeighbors(cell) {
+          let neighbors = [];
+          let { x, y } = cell;
+          if (y > 0) neighbors.push(maze[y - 1][x]); // top
+          if (x < size - 1) neighbors.push(maze[y][x + 1]); // right
+          if (y < size - 1) neighbors.push(maze[y + 1][x]); // bottom
+          if (x > 0) neighbors.push(maze[y][x - 1]); // left
+          return neighbors.filter((n) => !n.visited);
+        }
+        function removeWalls(current, next) {
+          let dx = current.x - next.x;
+          let dy = current.y - next.y;
+          if (dx === 1) {
+            current.walls.left = false;
+            next.walls.right = false;
+          } else if (dx === -1) {
+            current.walls.right = false;
+            next.walls.left = false;
+          }
+          if (dy === 1) {
+            current.walls.top = false;
+            next.walls.bottom = false;
+          } else if (dy === -1) {
+            current.walls.bottom = false;
+            next.walls.top = false;
+          }
+        }
+        let stack = [];
+        let startCell = maze[0][0];
+        startCell.visited = true;
+        stack.push(startCell);
+        while (stack.length > 0) {
+          let current = stack[stack.length - 1];
+          let neighbors = getNeighbors(current);
+          if (neighbors.length > 0) {
+            let next = neighbors[Math.floor(Math.random() * neighbors.length)];
+            next.visited = true;
+            removeWalls(current, next);
+            stack.push(next);
+          } else {
+            stack.pop();
+          }
+        }
+      }
+
+      /* ------------------- Render Maze (Dual Engine: Canvas 2D & DOM) ------------------- */
+      function renderMaze() {
+        mazeContainer.innerHTML = "";
+        mazeContainer.style.width = mazeSize * cellSize + "px";
+        mazeContainer.style.height = mazeSize * cellSize + "px";
+
+        if (canvasMode) {
+          renderCanvasMaze();
+        } else {
+          renderDomMaze();
+        }
+      }
+
+      let canvasAnimPending = false;
+      function scheduleCanvasRedraw() {
+        if (!canvasMode) return;
+        if (!canvasAnimPending) {
+          canvasAnimPending = true;
+          requestAnimationFrame(() => {
+            canvasAnimPending = false;
+            drawCanvasFrame();
+          });
+        }
+      }
+
+      function renderCanvasMaze() {
+        mazeContainer.innerHTML = "";
+        const canvas = document.createElement("canvas");
+        canvas.id = "maze-canvas";
+        canvas.width = mazeSize * cellSize;
+        canvas.height = mazeSize * cellSize;
+        canvas.style.display = "block";
+        mazeContainer.appendChild(canvas);
+        scheduleCanvasRedraw();
+      }
+
+      function drawCanvasFrame() {
+        const canvas = document.getElementById("maze-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw maze walls
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        maze.forEach((row) => {
+          row.forEach((cell) => {
+            const x = cell.x * cellSize;
+            const y = cell.y * cellSize;
+            if (cell.walls.top) {
+              ctx.moveTo(x, y);
+              ctx.lineTo(x + cellSize, y);
+            }
+            if (cell.walls.right) {
+              ctx.moveTo(x + cellSize, y);
+              ctx.lineTo(x + cellSize, y + cellSize);
+            }
+            if (cell.walls.bottom) {
+              ctx.moveTo(x, y + cellSize);
+              ctx.lineTo(x + cellSize, y + cellSize);
+            }
+            if (cell.walls.left) {
+              ctx.moveTo(x, y);
+              ctx.lineTo(x, y + cellSize);
+            }
+          });
+        });
+        ctx.stroke();
+
+        // Draw destination icon
+        if (sprites.home.complete) {
+          ctx.drawImage(sprites.home, destinationPosition.x * cellSize + 2, destinationPosition.y * cellSize + 2, cellSize - 4, cellSize - 4);
+        }
+
+        // Draw events
+        events.forEach((ev) => {
+          if (sprites.dice.complete) {
+            ctx.drawImage(sprites.dice, ev.x * cellSize + 2, ev.y * cellSize + 2, cellSize - 4, cellSize - 4);
+          }
+        });
+
+        // Draw player icon
+        if (sprites.key.complete) {
+          ctx.drawImage(sprites.key, playerPosition.x * cellSize + 2, playerPosition.y * cellSize + 2, cellSize - 4, cellSize - 4);
+        }
+
+        // Draw Fog if enabled
+        if (foggyMode) {
+          const minX = Math.max(playerPosition.x - Math.floor(visionRange / 2), 0);
+          const maxX = Math.min(playerPosition.x + Math.floor(visionRange / 2), mazeSize - 1);
+          const minY = Math.max(playerPosition.y - Math.floor(visionRange / 2), 0);
+          const maxY = Math.min(playerPosition.y + Math.floor(visionRange / 2), mazeSize - 1);
+
+          ctx.fillStyle = "#000000";
+          for (let y = 0; y < mazeSize; y++) {
+            for (let x = 0; x < mazeSize; x++) {
+              const isStart = (x === startingPosition.x && y === startingPosition.y);
+              const isDest = (x === destinationPosition.x && y === destinationPosition.y);
+              const inVision = (x >= minX && x <= maxX && y >= minY && y <= maxY);
+              if (!isStart && !isDest && !inVision) {
+                ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+              }
+            }
+          }
+        }
+      }
+
+      function renderDomMaze() {
+        mazeContainer.innerHTML = "";
+        maze.forEach((row) => {
+          row.forEach((cell) => {
+            const cellDiv = document.createElement("div");
+            cellDiv.classList.add("cell");
+            cellDiv.style.width = cellSize + "px";
+            cellDiv.style.height = cellSize + "px";
+            cellDiv.dataset.x = cell.x;
+            cellDiv.dataset.y = cell.y;
+            cellDiv.style.borderTop = cell.walls.top ? "1px solid black" : "1px solid transparent";
+            cellDiv.style.borderRight = cell.walls.right ? "1px solid black" : "1px solid transparent";
+            cellDiv.style.borderBottom = cell.walls.bottom ? "1px solid black" : "1px solid transparent";
+            cellDiv.style.borderLeft = cell.walls.left ? "1px solid black" : "1px solid transparent";
+            mazeContainer.appendChild(cellDiv);
+          });
+        });
+
+        // Mark DOM start and destination
+        let startCell = document.querySelector(`.cell[data-x='${playerPosition.x}'][data-y='${playerPosition.y}']`);
+        if (startCell) {
+          startCell.classList.add("start");
+          startCell.innerHTML = '<div class="player"></div>';
+        }
+        let destCell = document.querySelector(`.cell[data-x='${destinationPosition.x}'][data-y='${destinationPosition.y}']`);
+        if (destCell) {
+          destCell.classList.add("destination");
+        }
+        events.forEach((ev) => {
+          let cellDiv = document.querySelector(`.cell[data-x='${ev.x}'][data-y='${ev.y}']`);
+          if (cellDiv) cellDiv.classList.add("event");
+        });
+        updateFog();
+      }
+
+      /* ------------------- Initialize Positions & Events ------------------- */
+      function initGamePositions() {
+        const corners = [
+          { x: 0, y: 0 },
+          { x: mazeSize - 1, y: 0 },
+          { x: mazeSize - 1, y: mazeSize - 1 },
+          { x: 0, y: mazeSize - 1 },
+        ];
+        const startCornerIndex = Math.floor(Math.random() * corners.length);
+        playerPosition = { ...corners[startCornerIndex] };
+        startingPosition = { ...playerPosition };
+        destinationPosition = { ...corners[(startCornerIndex + 2) % 4] };
+      }
+
+      function placePlayerAndDestination() {
+        initGamePositions();
+      }
+
+      /* ------------------- Place Events ------------------- */
+      function placeEvents() {
+        // Clear any previous events
+        events = [];
+        document.querySelectorAll(".cell.event").forEach((cell) => {
+          cell.classList.remove("event");
+        });
+
+        eventCount = parseInt(eventSelect.value); // Get the new number of events
+        let emptyCells = [];
+        maze.forEach((row) => {
+          row.forEach((cell) => {
+            // Exclude start and destination cells
+            if (
+              !(
+                (cell.x === startingPosition.x &&
+                  cell.y === startingPosition.y) ||
+                (cell.x === destinationPosition.x &&
+                  cell.y === destinationPosition.y)
+              )
+            ) {
+              emptyCells.push(cell);
+            }
+          });
+        });
+
+        for (let i = 0; i < eventCount; i++) {
+          if (emptyCells.length === 0) break;
+          let index = Math.floor(Math.random() * emptyCells.length);
+          let eventCell = emptyCells.splice(index, 1)[0];
+          events.push(eventCell);
+          let cellDiv = document.querySelector(
+            `.cell[data-x='${eventCell.x}'][data-y='${eventCell.y}']`
+          );
+          cellDiv.classList.add("event");
+        }
+      }
+
+      /* ------------------- Fog Update ------------------- */
+      function updateFog(currentVision = visionRange) {
+        if (canvasMode) {
+          scheduleCanvasRedraw();
+          return;
+        }
+
+        // Remove all existing fog overlays in DOM mode
+        document.querySelectorAll(".fog").forEach((fog) => fog.remove());
+
+        // If foggy mode is disabled, do nothing
+        if (!foggyMode) return;
+
+        // Calculate the visible area based on the player's position and maze boundaries
+        const minX = Math.max(
+          playerPosition.x - Math.floor(currentVision / 2),
+          0
+        );
+        const maxX = Math.min(
+          playerPosition.x + Math.floor(currentVision / 2),
+          mazeSize - 1
+        );
+        const minY = Math.max(
+          playerPosition.y - Math.floor(currentVision / 2),
+          0
+        );
+        const maxY = Math.min(
+          playerPosition.y + Math.floor(currentVision / 2),
+          mazeSize - 1
+        );
+
+        // Iterate through all cells in the maze
+        document.querySelectorAll(".cell").forEach((cell) => {
+          const x = parseInt(cell.dataset.x);
+          const y = parseInt(cell.dataset.y);
+          let visible = false;
+
+          // Always show the start and destination cells
+          if (
+            (x === startingPosition.x && y === startingPosition.y) ||
+            (x === destinationPosition.x && y === destinationPosition.y)
+          ) {
+            visible = true;
+          }
+
+          // Show cells within the calculated visible area
+          if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+            visible = true;
+          }
+
+          // Add fog overlay to cells that are not visible
+          if (!visible) {
+            const fogDiv = document.createElement("div");
+            fogDiv.classList.add("fog");
+            cell.appendChild(fogDiv);
+          }
+        });
+      }
+
+      /* ------------------- Player Movement & Keyboard Control ------------------- */
+      document.addEventListener("keydown", (e) => {
+        let newX = playerPosition.x;
+        let newY = playerPosition.y;
+        if (e.key === "ArrowUp") newY--;
+        else if (e.key === "ArrowDown") newY++;
+        else if (e.key === "ArrowLeft") newX--;
+        else if (e.key === "ArrowRight") newX++;
+        // Boundary check
+        if (newX < 0 || newX >= mazeSize || newY < 0 || newY >= mazeSize)
+          return;
+        // Check walls for allowed movement (based on current cell walls)
+        let currentCell = maze[playerPosition.y][playerPosition.x];
+        if (!canPassThroughWalls) {
+          if (newX > playerPosition.x && currentCell.walls.right) return;
+          if (newX < playerPosition.x && currentCell.walls.left) return;
+          if (newY > playerPosition.y && currentCell.walls.bottom) return;
+          if (newY < playerPosition.y && currentCell.walls.top) return;
+          movePlayer(newX, newY);
+        } else {
+          movePlayer(newX, newY);
+          canPassThroughWalls = false; // Reset wall pass flag after moving
+        }
+      });
+
+      function movePlayer(newX, newY) {
+        // Record move if recording mode is enabled
+        if (recording) {
+          recordedMoves.push({ x: newX, y: newY });
+        }
+
+        // Update player position
+        playerPosition = { x: newX, y: newY };
+
+        if (canvasMode) {
+          // Canvas 2D mode: redraw frame via rAF
+          scheduleCanvasRedraw();
+        } else {
+          // DOM mode: move player DOM node
+          let oldCell = document.querySelector(`.cell .player`);
+          if (oldCell && oldCell.parentElement) {
+            oldCell.parentElement.removeChild(oldCell);
+          }
+          let newCell = document.querySelector(`.cell[data-x='${newX}'][data-y='${newY}']`);
+          if (newCell) {
+            newCell.innerHTML = '<div class="player"></div>';
+          }
+        }
+
+        // Decrease the vision effect steps and restore default vision if needed
+        if (visionEffectSteps > 0) {
+          visionEffectSteps--;
+          if (visionEffectSteps === 0) {
+            visionRange = 3; // Reset vision range
+          }
+        }
+
+        updateFog(visionRange); // Update fog based on the current vision range
+        playSound('move');
+        checkEvent();
+        checkWin();
+      }
+
+      /* ------------------- Event Trigger ------------------- */
+      // When the player steps on a cell that has an event, trigger one of four random effects.
+      function checkEvent() {
+        let cell = maze[playerPosition.y][playerPosition.x];
+        for (let i = 0; i < events.length; i++) {
+          if (events[i].x === cell.x && events[i].y === cell.y) {
+            playSound('event');
+            triggerEvent();
+            // Remove the event visual from the cell
+            let cellDiv = document.querySelector(
+              `.cell[data-x='${cell.x}'][data-y='${cell.y}']`
+            );
+            if (cellDiv) {
+              cellDiv.classList.remove("event");
+            }
+            events.splice(i, 1); // Remove the event from the list
+            if (canvasMode) {
+              scheduleCanvasRedraw();
+            }
+            break;
+          }
+        }
+      }
+
+      function triggerEvent() {
+        if (eventsData.length === 0) {
+          alert("No events loaded!");
+          return;
+        }
+
+        // Pick a random event from the loaded events
+        const randomEvent =
+          eventsData[Math.floor(Math.random() * eventsData.length)];
+        alert(
+          `Event Triggered: ${randomEvent.name}\n${randomEvent.description}`
+        );
+
+        // Execute the event's effect
+        switch (randomEvent.effect) {
+          case "increase_vision":
+            applyVisionEffect(5, 3); // Vision enhancement for a number of steps
+            break;
+          case "reduce_vision":
+            applyVisionEffect(1, 5); // Vision restriction for a number of steps
+            break;
+          case "pass_through_wall":
+            allowWallPass(randomEvent.duration);
+            break;
+          case "reset_position":
+            resetPlayerPosition(); // Teleport to start and turn off recording mode
+            break;
+          default:
+            console.warn("Unknown event effect:", randomEvent.effect);
+        }
+      }
+
+      function applyVisionEffect(NewVisionRange, steps) {
+        foggyMode = true; // Enable foggy mode if not already enabled
+        visionEffectSteps = steps; // Set the number of steps for the vision effect
+        visionRange = NewVisionRange; // Set the new vision range
+
+        // Record the vision change if recording mode is enabled
+        if (recording) {
+          recordedMoves.push({
+            type: "vision",
+            visionRange: NewVisionRange,
+            steps,
+          });
+        }
+
+        // Apply the restricted or enhanced vision
+        updateFog(visionRange);
+      }
+
+      function allowWallPass(duration) {
+        canPassThroughWalls = true;
+      }
+
+      function resetPlayerPosition() {
+        movePlayer(startingPosition.x, startingPosition.y); // Move the player back to the starting position
+        recordedMoves = []; // Clear recorded moves
+
+        // Turn off recording mode
+        recording = false;
+        recordingToggle.classList.remove("active"); // Update the slider UI
+      }
+
+      /* ------------------- Win Check ------------------- */
+      function checkWin() {
+        if (
+          playerPosition.x === destinationPosition.x &&
+          playerPosition.y === destinationPosition.y
+        ) {
+          playSound('win');
+          alert("Congratulations! You reached the destination!");
+          // Start a new game after winning
+          setTimeout(() => {
+            mazeSize = parseInt(difficultySelect.value);
+            generateMaze(mazeSize);
+            initGamePositions();
+            placeEvents();
+            renderMaze();
+          }, 1000); // Wait 1 second before starting a new game
+        }
+      }
+
+      /* ------------------- Replay Functionality ------------------- */
+      replayBtn.addEventListener("click", () => {
+        if (recordedMoves.length === 0) return;
+        let moves = [...recordedMoves];
+        recordedMoves = [];
+        let interval = setInterval(() => {
+          if (moves.length === 0) {
+            clearInterval(interval);
+            return;
+          }
+          let move = moves.shift();
+
+          // Check if the move is a vision change
+          if (move.type === "vision") {
+            applyVisionEffect(move.visionRange, move.steps); // Replay the vision change
+          } else {
+            movePlayer(move.x, move.y); // Replay the player's movement
+          }
+        }, 300);
+      });
+
+      /* ------------------- Start Game ------------------- */
+      startBtn.addEventListener("click", () => {
+        recordedMoves = [];
+        mazeSize = parseInt(difficultySelect.value);
+        generateMaze(mazeSize);
+        initGamePositions();
+        placeEvents();
+        renderMaze();
+      });
+
+      eventSelect.addEventListener("change", () => {
+        placeEvents(); // Recalculate and place events based on the new number
+        if (canvasMode) {
+          drawCanvasFrame();
+        }
+      });
+
+      // Initialize the game on page load
+      window.onload = () => {
+        startBtn.click();
+      };
+    </script>
+  </body>
+</html>
