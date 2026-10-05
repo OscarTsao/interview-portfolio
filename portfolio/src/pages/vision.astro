@@ -1,44 +1,52 @@
 ---
 import Site from '../layouts/Site.astro';
+import SegmentationArchive from '../components/SegmentationArchive.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<Site title={import.meta.env.DEV?'TVST 研究脈絡 — PCV 病灶標註展示':'TVST 研究脈絡 — PCV 分割方法與來源'} description="理解 FA 影像中的 PCV 分割任務、研究貢獻與資料來源；影像疊圖僅於本機展示。">
+<Site title={import.meta.env.DEV?'TVST 研究脈絡 — PCV 分割結果與標註':'TVST 研究脈絡 — PCV 分割方法與來源'} description="理解 FA 影像中的 PCV 分割任務、封存模型比較與研究貢獻；研究影像僅於本機展示。">
 <a class="back" href={base+'projects/vision/'}>← 回到研究介紹</a>
 <section class="case-hero">
   <p class="eyebrow">OPHTHALMIC IMAGING / PCV SEGMENTATION</p>
-  <h1>{import.meta.env.DEV?<>從 FA 影像，<br/>看見病灶標註範圍。</>:<>從 FA 影像，<br/>理解病灶分割。</>}</h1>
-  <p>{import.meta.env.DEV?'TVST 研究關注 PCV 病灶的分割與定位。先對照原圖與參考標註，理解模型需要預測的區域。':'TVST 研究關注 PCV 病灶的分割與定位。這裡說明研究任務、我的貢獻與資料來源；原圖及標註的互動比較於本機提供。'}</p>
-  <div class="links"><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀 TVST 論文 ↗</a><a href="#source">展示來源與限制 ↓</a></div>
+  <h1>{import.meta.env.DEV?<>PCV 病灶分割，<br/>從標註到模型結果。</>:<>從 FA 影像，<br/>理解病灶分割。</>}</h1>
+  <p>{import.meta.env.DEV?'從原圖、參考標註到封存模型預測，逐層查看病灶範圍；再比較後處理如何改變結果。研究簡報的模型比較與失敗案例另保留來源說明。':'TVST 研究關注 PCV 病灶的分割與定位。這裡說明研究任務、我的貢獻與資料來源；封存結果及標註的互動比較於本機提供。'}</p>
+  <div class="links"><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀 TVST 論文 ↗</a>{import.meta.env.DEV&&<a href="#pixel-comparison">查看逐像素比較 ↓</a>}<a href="#source">展示來源與限制 ↓</a></div>
 </section>
-<section class="seg-viewer" aria-label="PCV 病灶標註展示">
-  <div class="viewer-heading"><div><p class="eyebrow">IMAGE &amp; REFERENCE MASK</p><h2>原圖與病灶標註</h2></div><span class="badge">{import.meta.env.DEV?'本機資料預覽':'公開研究說明'}</span></div>
-  <p class="scope">{import.meta.env.DEV?'目前顯示 repo 附帶的參考標註。':'公開版保留研究方法與來源說明；原圖與參考標註於本機展示。'}參考標註<strong>不是模型預測</strong>，這三張影像與論文案例的對應仍待確認。</p>
+<SegmentationArchive/>
+<section id="pixel-comparison" class="seg-viewer" aria-label="PCV 病灶分割比較">
+  <div class="viewer-heading"><div><p class="eyebrow">IMAGE · REFERENCE · PREDICTION</p><h2>同一影像，逐層比較</h2></div><span class="badge">{import.meta.env.DEV?'本機研究預覽':'公開研究說明'}</span></div>
+  <p class="scope">{import.meta.env.DEV?'可切換原始尺寸標註，以及 224 × 224 的參考標註、封存預測與後處理遮罩。':'公開版保留研究方法與來源說明；影像與逐像素比較於本機展示。'}參考標註<strong>不是模型預測</strong>；封存輸出與最終論文案例的對應仍待確認。</p>
   <fieldset id="seg-controls" disabled hidden={!import.meta.env.DEV}>
-    <legend class="sr-only">影像與標註控制</legend>
+    <legend class="sr-only">影像與分割圖層控制</legend>
     <div class="field"><label for="seg-case">選擇影像</label><select id="seg-case"><option>載入中…</option></select></div>
-    <div class="field"><label for="mask-mode">檢視方式</label><select id="mask-mode"><option value="overlay">標註疊圖</option><option value="mask">二值遮罩</option></select></div>
-    <label class="check"><input id="mask-visible" type="checkbox" checked/> 顯示標註</label>
+    <div class="field"><label for="seg-layer">分割圖層</label><select id="seg-layer"><option value="native">參考標註 · 原始尺寸</option><option value="reference">參考標註 · 模型尺寸</option><option value="prediction">封存模型預測</option><option value="processed">後處理結果</option></select></div>
+    <div class="field"><label for="mask-mode">檢視方式</label><select id="mask-mode"><option value="overlay">紅色疊圖</option><option value="mask">二值遮罩</option></select></div>
+    <label class="check"><input id="mask-visible" type="checkbox" checked/> 顯示遮罩</label>
     <div class="field opacity-field"><label for="opacity">疊圖不透明度 <output id="opacity-value" for="opacity">45%</output></label><input id="opacity" type="range" min="0" max="100" value="45"/></div>
     <button id="seg-reset" type="button">重設檢視</button>
   </fieldset>
   <p id="seg-status" role="status">{import.meta.env.DEV?'正在載入原圖與標註…':'公開版提供研究方法與來源說明；研究影像與紅色病灶標註僅於本機展示。'}</p><button id="seg-retry" type="button" hidden>重新載入</button>
   <div id="seg-content" hidden aria-busy="true">
     <div class="image-pair">
-      <figure><figcaption><strong>FA 原圖</strong><span>儲存庫中的影像，保留原始尺寸</span></figcaption><canvas id="original-canvas" role="img" aria-label="所選 FA 原圖"></canvas></figure>
+      <figure><figcaption><strong id="input-title">FA 原圖</strong><span id="input-description">儲存庫中的影像，保留原始尺寸</span></figcaption><canvas id="original-canvas" role="img" aria-label="所選 FA 原圖"></canvas></figure>
       <figure><figcaption><strong id="mask-title">參考標註疊圖</strong><span id="mask-legend"><i aria-hidden="true"></i>紅色：資料集標註區域</span></figcaption><canvas id="seg-canvas" role="img" aria-label="FA 原圖與病灶參考標註疊圖"></canvas></figure>
+    </div>
+    <div id="seg-metrics" hidden>
+      <dl class="scores"><div><dt>預測 Dice</dt><dd id="prediction-dice"></dd></div><div><dt>後處理 Dice</dt><dd id="processed-dice"></dd></div></dl>
+      <p id="seg-observation"></p>
+      <p class="metric-caption">Dice 衡量預測與參考標註的重疊程度，1 表示完全重疊。數值由此影像的二值遮罩重算，並核對封存紀錄；單一案例不代表整體模型成效。</p>
     </div>
     <div class="viewer-footer"><p id="dimensions"></p><a id="seg-link" href="?case=seg-01">此影像連結 →</a></div>
   </div>
   <noscript><p>互動疊圖需要 JavaScript。下方仍可閱讀研究任務與資料來源。</p></noscript>
 </section>
 <section class="prediction-note" aria-labelledby="prediction-title">
-  <div><p class="eyebrow">MODEL PREDICTION</p><h2 id="prediction-title">分割預測：尚待補齊來源</h2></div>
-  <p>這份快照中尚未找到能與影像配對、確認版本的病灶分割預測或訓練完成權重。因此目前不顯示模型遮罩、Dice 或後處理成效。</p>
-  <p>補齊輸出後，應比較同一影像的<strong>參考標註、模型預測及後處理結果</strong>，再呈現誤差與對應指標。</p>
+  <div><p class="eyebrow">POST-PROCESSING</p><h2 id="prediction-title">保留最大區域，也可能刪掉病灶</h2></div>
+  <p>封存的後處理保留最大的連通區域，去除分散的小區塊。三個既有案例分別呈現 Dice 下降、不變與上升：減少零碎預測有時也會移除正確區域，不能假設後處理一定改善結果。</p>
+  <p>本機比較使用 NAS 找回的<strong>獨立參考標註、預測及後處理遮罩</strong>，維持原始檔案；不是由彩色疊圖反推。這些是儲存的實驗輸出，與最終 TVST 論文的逐案對應尚未確認。</p>
 </section>
 <section id="source" class="section source">
-  <div><p class="eyebrow">TASK &amp; PROVENANCE</p><h2>理解分割，也看清證據。</h2><p>原圖回答「模型看到了什麼」；參考標註回答「資料集要模型找出哪個區域」。兩者能說明任務，模型能力仍需另以預測與評估證明。</p><p>我在相關 TVST 論文為第二作者，負責影像後處理，並參與跨院資料整理、研究討論與撰寫。</p></div>
-  <div><h3>本次資料</h3><ul><li>來源：Handover_Self-supervised，版本 <code>344cd81</code>。</li><li>選自 repo 的 <code>All/FA/test/img</code> 與 <code>mask</code>，按相同檔名配對。</li><li>三張示例用於介面展示，不代表三位病患或論文測試集的完整評估。</li><li>遮罩為 0／255 二值資料；疊圖只為標註加色，不修改原始影像與標註。</li><li>私人影像僅於本機提供，靜態網站建置不包含這些檔案。</li></ul></div>
+  <div><p class="eyebrow">TASK &amp; PROVENANCE</p><h2>理解分割，也看清證據。</h2><p>參考標註說明模型需要找出的區域；模型比較圖則呈現預測的重疊與誤差。展示同時保留改善與失敗情境，不以挑選案例推論整體效果。</p><p>我在相關 TVST 論文為第二作者，負責影像後處理，並參與跨院資料整理、研究討論與撰寫。</p></div>
+  <div><h3>本次資料</h3><ul><li>模型比較：NAS 封存的 <code>Handover_images.pptx</code>，第 3、4、10 頁；影像保留原位元組，Dice 按來源簡報記錄。</li><li>原始尺寸標註：Handover_Self-supervised，版本 <code>344cd81</code> 的三組 test 影像與 mask。</li><li>逐像素預測：Handover Linux 研究封存的三組 224 × 224 輸出。輸入及標註與原始尺寸資料最近鄰縮放後逐像素一致；Dice 由遮罩重算，吻合來源紀錄。</li><li>簡報比較與互動遮罩不是同一批展示影像；均未逐案確認與最終 TVST 論文的對應。</li><li>互動遮罩為 0／255 二值資料；紅色疊圖不修改來源檔案。私人影像僅於本機提供，靜態網站建置不包含這些檔案。</li></ul></div>
 </section>
 <aside class="appendix"><div><p class="eyebrow">EXPERIMENT APPENDIX</p><h3>自監督影像重建</h3><p>先前的 Teacher／Student 圖片是重建實驗產物，保留於附錄，與分割任務分開。</p></div><a href={base+'reconstruction/'}>查看重建附錄 →</a></aside>
 </Site>
@@ -47,6 +55,7 @@ const base = import.meta.env.BASE_URL;
 const get = <T extends HTMLElement>(id:string) => document.getElementById(id) as T;
 const controls=get<HTMLFieldSetElement>('seg-controls');
 const select=get<HTMLSelectElement>('seg-case');
+const layerSelect=get<HTMLSelectElement>('seg-layer');
 const mode=get<HTMLSelectElement>('mask-mode');
 const visible=get<HTMLInputElement>('mask-visible');
 const opacity=get<HTMLInputElement>('opacity');
@@ -55,9 +64,18 @@ const content=get('seg-content');
 const retry=get<HTMLButtonElement>('seg-retry');
 const canvas=get<HTMLCanvasElement>('seg-canvas');
 const original=get<HTMLCanvasElement>('original-canvas');
-type Example={id:string;label:string;width:number;height:number;images:{image:string;mask:string};prediction:null};
+type View={id:string;label:string;width:number;height:number};
+type Example=View&{images:{image:string;mask:string};prediction:null};
+type Score={dice:number|null;predictedPixels:number;referencePixels:number;intersectionPixels:number};
+const predictionRoles=['image','reference','prediction','processed'] as const;
+type PredictionRole=typeof predictionRoles[number];
+type PredictionExample=View&{images:Record<PredictionRole,string>;sha256:Record<PredictionRole,string>;before:Score;after:Score};
+const layerLabels={native:'參考標註',reference:'參考標註',prediction:'封存模型預測',processed:'後處理結果'};
+type Layer=keyof typeof layerLabels;
 let records:Example[]=[];
-let current:Example|undefined;
+let predictionRecords:PredictionExample[]|undefined;
+let current:View|undefined;
+let activeLayer:Layer='native';
 let bitmap:ImageBitmap|undefined;
 let maskPixels:Uint8ClampedArray|undefined;
 function draw(){
@@ -81,17 +99,57 @@ function draw(){
   }
   opacity.disabled=maskOnly||!visible.checked;
   get('opacity-value').textContent=opacity.value+'%';
-  get('mask-title').textContent=maskOnly?'參考標註二值遮罩':'參考標註疊圖';
-  get('mask-legend').textContent=!visible.checked?'標註已隱藏':maskOnly?'白色：標註區域；黑色：其餘區域':'紅色：資料集標註區域';
-  canvas.setAttribute('aria-label',current.label+(maskOnly?'的二值參考標註':'的 FA 與參考標註疊圖')+(!visible.checked?'，標註已隱藏':''));
+  const label=layerLabels[activeLayer];
+  get('mask-title').textContent=label+(maskOnly?'二值遮罩':'疊圖');
+  get('mask-legend').textContent=!visible.checked?'遮罩已隱藏':maskOnly?'白色：'+label+'區域；黑色：其餘區域':'紅色：'+label+'區域';
+  canvas.setAttribute('aria-label',current.label+'的'+label+(maskOnly?'二值遮罩':'紅色疊圖')+(!visible.checked?'，遮罩已隱藏':''));
 }
-async function loadPair(item:Example,signal:AbortSignal){
+function validScore(score:Score){
+  if(!score)return false;
+  const {dice,predictedPixels:p,referencePixels:r,intersectionPixels:i}=score;
+  return [p,r,i].every(n=>Number.isInteger(n)&&n>=0&&n<=224*224)&&i<=Math.min(p,r)&&
+    (p+r===0?dice===null:typeof dice==='number'&&Number.isFinite(dice)&&Math.abs(dice-2*i/(p+r))<1e-12);
+}
+function checkScore(prediction:Uint8ClampedArray,reference:Uint8ClampedArray,score:Score){
+  let p=0,r=0,overlap=0;
+  for(let i=0;i<prediction.length;i+=4){
+    p+=Number(prediction[i]===255);r+=Number(reference[i]===255);
+    overlap+=Number(prediction[i]===255&&reference[i]===255);
+  }
+  if(p!==score.predictedPixels||r!==score.referencePixels||overlap!==score.intersectionPixels)throw Error('metrics');
+}
+function binaryPixels(image:ImageBitmap){
+  const mask=document.createElement('canvas');mask.width=image.width;mask.height=image.height;
+  mask.getContext('2d')!.drawImage(image,0,0);
+  const pixels=mask.getContext('2d')!.getImageData(0,0,image.width,image.height).data;
+  for(let i=0;i<pixels.length;i+=4){
+    if(![0,255].includes(pixels[i])||pixels[i]!==pixels[i+1]||pixels[i]!==pixels[i+2]||pixels[i+3]!==255)throw Error('mask encoding');
+  }
+  return pixels;
+}
+async function loadPredictions(signal:AbortSignal){
+  if(predictionRecords)return predictionRecords;
+  const response=await fetch(base+'demo-data/segmentation-predictions/manifest.json',{signal});
+  if(!response.ok)throw Error('prediction manifest');
+  const data=await response.json();
+  if(data.schemaVersion!==1||data.kind!=='archived-segmentation-output'||!Array.isArray(data.cases)||data.cases.length!==3||!data.cases.every((c:PredictionExample,i:number)=>
+    c.id==='seg-0'+(i+1)&&c.label===records[i].label&&c.width===224&&c.height===224&&validScore(c.before)&&validScore(c.after)&&
+    predictionRoles.every(role=>c.images?.[role]===c.id+'-'+role+'.png'&&typeof c.sha256?.[role]==='string'&&/^[a-f0-9]{64}$/.test(c.sha256[role]))))throw Error('prediction schema');
+  predictionRecords=data.cases;
+  return predictionRecords!;
+}
+async function loadImages(item:View&{images:Record<string,string>;sha256?:Record<string,string>},folder:string,roles:string[],signal:AbortSignal){
   const images:ImageBitmap[]=[];
   try{
-    for(const role of ['image','mask'] as const){
-      const response=await fetch(base+'demo-data/segmentation/'+item.images[role],{signal});
+    for(const role of roles){
+      const response=await fetch(base+'demo-data/'+folder+'/'+item.images[role],{signal});
       if(!response.ok)throw Error('image');
-      const decoded=await createImageBitmap(await response.blob());
+      const blob=await response.blob();
+      if(item.sha256){
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))).map(b=>b.toString(16).padStart(2,'0')).join('');
+        if(hash!==item.sha256[role])throw Error('image hash');
+      }
+      const decoded=await createImageBitmap(blob);
       images.push(decoded);
       if(decoded.width!==item.width||decoded.height!==item.height)throw Error('dimensions');
     }
@@ -100,31 +158,48 @@ async function loadPair(item:Example,signal:AbortSignal){
 }
 async function render(){
   const item=records.find(c=>c.id===select.value);if(!item)return;
+  const selectedLayer=layerSelect.value as Layer;
   controls.disabled=true;retry.hidden=true;content.hidden=true;content.setAttribute('aria-busy','true');
-  status.textContent='正在載入 '+item.label+' 的原圖與標註…';
+  status.textContent='正在載入 '+item.label+' 的影像與'+layerLabels[selectedLayer]+'…';
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
   let pair:ImageBitmap[]=[];
   try{
-    pair=await loadPair(item,controller.signal);
-    const mask=document.createElement('canvas');mask.width=item.width;mask.height=item.height;
-    mask.getContext('2d')!.drawImage(pair[1],0,0);
-    const pixels=mask.getContext('2d')!.getImageData(0,0,item.width,item.height).data;
-    for(let i=0;i<pixels.length;i+=4){
-      if(![0,255].includes(pixels[i])||pixels[i]!==pixels[i+1]||pixels[i]!==pixels[i+2]||pixels[i+3]!==255)throw Error('mask encoding');
+    let view:View=item;
+    let pixels:Uint8ClampedArray;
+    get('seg-metrics').hidden=true;
+    if(selectedLayer==='native'){
+      pair=await loadImages(item,'segmentation',['image','mask'],controller.signal);
+      pixels=binaryPixels(pair[1]);
+    }else{
+      const prediction=(await loadPredictions(controller.signal)).find(c=>c.id===item.id)!;
+      pair=await loadImages(prediction,'segmentation-predictions',[...predictionRoles],controller.signal);
+      const masks={reference:binaryPixels(pair[1]),prediction:binaryPixels(pair[2]),processed:binaryPixels(pair[3])};
+      checkScore(masks.prediction,masks.reference,prediction.before);checkScore(masks.processed,masks.reference,prediction.after);
+      view=prediction;pixels=masks[selectedLayer];
+      const before=prediction.before.dice,after=prediction.after.dice;
+      get('prediction-dice').textContent=before===null?'不適用':before.toFixed(4);
+      get('processed-dice').textContent=after===null?'不適用':after.toFixed(4);
+      get('seg-observation').textContent=before===null||after===null?'空遮罩組合不計算 Dice。':after<before?'此案例 Dice 下降：移除零碎區域時，也刪除了部分正確病灶。':after>before?'此案例 Dice 上升：保留最大區域後，與參考標註的重疊比例提高。':'此案例 Dice 不變：預測已是單一連通區域，後處理未改變遮罩。';
+      get('seg-metrics').hidden=false;
     }
-    bitmap?.close();bitmap=pair[0];pair[1].close();pair=[];
-    current=item;maskPixels=pixels;
-    original.width=canvas.width=item.width;original.height=canvas.height=item.height;
+    bitmap?.close();bitmap=pair[0];pair.slice(1).forEach(image=>image.close());pair=[];
+    current=view;activeLayer=selectedLayer;maskPixels=pixels;
+    original.width=canvas.width=view.width;original.height=canvas.height=view.height;
     original.getContext('2d')!.drawImage(bitmap,0,0);
-    original.setAttribute('aria-label',item.label+' 的 FA 原圖');
+    original.setAttribute('aria-label',item.label+(selectedLayer==='native'?' 的 FA 原圖':' 的 224 × 224 模型輸入'));
+    get('input-title').textContent=selectedLayer==='native'?'FA 原圖':'FA 模型輸入';
+    get('input-description').textContent=selectedLayer==='native'?'儲存庫中的影像，保留原始尺寸':'封存的 224 × 224 影像，與右側遮罩逐像素配對';
     draw();
-    const url=new URL(location.href);url.searchParams.set('case',item.id);history.replaceState(null,'',url);
-    get<HTMLAnchorElement>('seg-link').href=url.pathname+url.search;
-    get('dimensions').textContent=item.width+' × '+item.height+' px · 同尺寸原圖與標註，未重採樣配對。';
-    status.textContent=item.label+' · 已載入原圖與參考標註；沒有模型預測。';
+    const url=new URL(location.href);url.searchParams.set('case',item.id);
+    if(selectedLayer==='native')url.searchParams.delete('layer');else url.searchParams.set('layer',selectedLayer);
+    history.replaceState(null,'',url);
+    get<HTMLAnchorElement>('seg-link').href=url.pathname+url.search+'#pixel-comparison';
+    get('dimensions').textContent=view.width+' × '+view.height+' px · '+(selectedLayer==='native'?'同尺寸原圖與標註，未重採樣配對。':'原始資料以最近鄰縮放至模型尺寸；目前顯示封存資料。');
+    status.textContent=item.label+' · 已載入'+(selectedLayer==='native'?'原圖與參考標註。':layerLabels[selectedLayer]+'；顯示封存結果，非即時推論。');
     content.hidden=false;
   }catch{
-    status.textContent='原圖或標註未完整載入，或配對格式不符。請重試或切換其他影像。';retry.hidden=false;
+    if(selectedLayer!=='native')predictionRecords=undefined;
+    status.textContent='影像或遮罩未完整載入，或資料核對不符。請重試或切換其他影像／圖層。';retry.hidden=false;
   }finally{
     pair.forEach(image=>image.close());clearTimeout(timeout);controls.disabled=false;content.setAttribute('aria-busy','false');
   }
@@ -140,6 +215,8 @@ async function load(){
     records=data.cases;select.replaceChildren(...records.map(c=>new Option(c.label,c.id)));
     const requested=new URL(location.href).searchParams.get('case');
     select.value=records.some(c=>c.id===requested)?requested!:'seg-01';
+    const requestedLayer=new URL(location.href).searchParams.get('layer');
+    layerSelect.value=requestedLayer&&Object.hasOwn(layerLabels,requestedLayer)?requestedLayer:'native';
   }catch{
     status.textContent='本機研究資料尚未提供或無法載入。研究說明仍可閱讀。';
     select.replaceChildren(new Option('資料未載入',''));retry.hidden=false;content.setAttribute('aria-busy','false');return;
@@ -147,12 +224,13 @@ async function load(){
   await render();
 }
 select.addEventListener('change',render);
+layerSelect.addEventListener('change',render);
 mode.addEventListener('change',draw);
 visible.addEventListener('change',draw);
 opacity.addEventListener('input',draw);
 retry.addEventListener('click',()=>records.length?render():load());
 get('seg-reset').addEventListener('click',async()=>{
-  select.value='seg-01';mode.value='overlay';visible.checked=true;opacity.value='45';await render();select.focus();
+  select.value='seg-01';layerSelect.value='native';mode.value='overlay';visible.checked=true;opacity.value='45';await render();select.focus();
 });
 if(import.meta.env.DEV){
   load();
@@ -164,5 +242,6 @@ if(import.meta.env.DEV){
 }
 </script>
 <style>
+.seg-viewer{scroll-margin-top:100px}.field{min-width:0;max-width:100%}.field select{max-width:100%}.scores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:24px 0 12px}.scores>div{background:var(--tint);border-radius:8px;padding:16px}.scores dt{font-size:14px;color:var(--muted)}.scores dd{margin:4px 0 0;font-size:26px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}.metric-caption{font-size:14px;max-width:850px}#seg-observation{font-weight:600;color:var(--ink);margin-bottom:8px}
 .seg-viewer{padding:28px;border:1px solid var(--border);border-radius:16px;background:var(--surface);margin-bottom:28px}.viewer-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.viewer-heading .eyebrow{margin-bottom:6px}.viewer-heading h2{margin-bottom:12px}.badge{border-radius:24px;background:var(--tint);color:var(--primary);font-size:14px;padding:5px 12px;font-weight:650}.scope{max-width:900px;font-size:15px}.scope strong{color:var(--ink)}#seg-controls{border:0;border-top:1px solid var(--border);padding:22px 0 0;margin:24px 0 0;display:flex;flex-wrap:wrap;gap:16px;align-items:end;min-width:0}.field{display:grid;gap:6px}.field label{font-weight:650;font-size:14px}.check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px}.check input{width:18px;height:18px;accent-color:var(--primary)}button,select{min-height:44px;padding:8px 12px;border:1px solid var(--control);background:var(--surface);border-radius:8px;color:var(--ink)}button:hover{background:var(--tint)}.opacity-field{min-width:180px;max-width:100%}.opacity-field label{display:flex;justify-content:space-between;gap:16px}.opacity-field input{min-height:44px;margin:0;width:100%;accent-color:var(--primary)}#seg-status{font-size:14px;margin:20px 0}.image-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.image-pair figure{margin:0;min-width:0}.image-pair figcaption{display:grid;gap:4px;margin-bottom:12px}.image-pair figcaption span{font-size:14px;color:var(--muted)}canvas{display:block;width:100%;height:auto;background:#000;border-radius:8px}.viewer-footer{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:14px}.viewer-footer p{margin:0}.viewer-footer a{display:inline-flex;align-items:center;min-height:44px}.prediction-note{border:1px dashed var(--control);border-radius:12px;padding:24px;margin-bottom:48px}.prediction-note h2{font-size:23px}.prediction-note p{max-width:850px}.prediction-note p:last-child{margin:0}.source{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px}.source li{color:var(--muted);margin:10px 0}.source ul{padding-left:20px}.source code{overflow-wrap:anywhere;font-size:14px}.appendix{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;border-top:1px solid var(--border);padding:32px 0 48px}.appendix h3{font-size:21px}.appendix p{max-width:740px;margin-bottom:8px}.appendix a{align-self:center;min-height:44px;display:inline-flex;align-items:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:720px){.seg-viewer{padding:18px}.image-pair,.source{grid-template-columns:1fr}.image-pair{gap:24px}#seg-controls{gap:12px}.opacity-field{width:100%}.source{gap:20px}.prediction-note{padding:20px}}
 </style>

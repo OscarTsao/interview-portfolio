@@ -10,6 +10,9 @@ cloudflare/.wrangler/
 cloudflare/.dev.vars*
 cloudflare/worker-configuration.d.ts
 cloudflare/public/bitoguard/
+cloudflare/public/hw3/
+cloudflare/public/hw4/
+cloudflare/public/hw5/
 products/bitoguard/.next/
 products/bitoguard/out/
 products/bitoguard/next-env.d.ts

@@ -2,8 +2,1402 @@
   "source": "HiED-Handover annotation; LingxiDiag-16K; CC BY-NC 4.0",
   "selection": "Three cases from the 20-case D3-I-S disagreement annotation set; not representative of overall performance",
   "cases": [
-    { "id": "P001", "sourceCaseId": "302736044", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F41"], "primary": "F32", "ranked": ["F32", "F41.1", "F51", "F39", "F98"], "verification": "emit_only" },
-    { "id": "P010", "sourceCaseId": "353853459", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F32"], "primary": "F20", "ranked": ["F20", "F32", "F98", "F41.2", "F51"], "verification": "emit_only" },
-    { "id": "P015", "sourceCaseId": "364295726", "run": "test_da_canonical", "model": "Qwen/Qwen3-32B-AWQ", "gold": ["F41"], "primary": "F32", "ranked": ["F32", "F43.2", "F41.1", "F51", "F39"], "verification": "emit_only" }
-  ]
+    {
+      "id": "P001",
+      "sourceCaseId": "302736044",
+      "run": "test_da_canonical",
+      "model": "Qwen/Qwen3-32B-AWQ",
+      "gold": [
+        "F41"
+      ],
+      "primary": "F32",
+      "ranked": [
+        "F32",
+        "F41.1",
+        "F51",
+        "F39",
+        "F98"
+      ],
+      "verification": "emit_only",
+      "compatible": [
+        "F43.2",
+        "F32",
+        "F51",
+        "F41.2",
+        "F39",
+        "F98"
+      ],
+      "verificationCodes": [
+        "F32",
+        "F41.1",
+        "F51",
+        "F39",
+        "F98"
+      ],
+      "policy": "commit_primary_emit",
+      "finalization": "diagnostician_emit",
+      "vetoApplied": false,
+      "criteria": [
+        {
+          "code": "F32",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C1",
+              "status": "met"
+            },
+            {
+              "id": "C2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C3",
+              "status": "not_met"
+            },
+            {
+              "id": "C4",
+              "status": "met"
+            },
+            {
+              "id": "C5",
+              "status": "met"
+            },
+            {
+              "id": "C6",
+              "status": "met"
+            },
+            {
+              "id": "C7",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.1",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B4",
+              "status": "insufficient_evidence"
+            }
+          ]
+        },
+        {
+          "code": "F98",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "met"
+            },
+            {
+              "id": "A4",
+              "status": "not_met"
+            },
+            {
+              "id": "A5",
+              "status": "met"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F51",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F39",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "met"
+            },
+            {
+              "id": "A3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A4",
+              "status": "met"
+            },
+            {
+              "id": "A5",
+              "status": "met"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F20",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A4",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B4",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "F41.0",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "not_met"
+            },
+            {
+              "id": "B4",
+              "status": "insufficient_evidence"
+            }
+          ]
+        },
+        {
+          "code": "F31",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "not_met"
+            },
+            {
+              "id": "B3",
+              "status": "not_met"
+            },
+            {
+              "id": "B4",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "met"
+            },
+            {
+              "id": "C2",
+              "status": "met"
+            },
+            {
+              "id": "C3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F43.1",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F45",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "not_met"
+            },
+            {
+              "id": "C2",
+              "status": "not_met"
+            },
+            {
+              "id": "C3",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "Z71",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "F42",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.2",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F43.2",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "insufficient_evidence"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P010",
+      "sourceCaseId": "353853459",
+      "run": "test_da_canonical",
+      "model": "Qwen/Qwen3-32B-AWQ",
+      "gold": [
+        "F32"
+      ],
+      "primary": "F20",
+      "ranked": [
+        "F20",
+        "F32",
+        "F98",
+        "F41.2",
+        "F51"
+      ],
+      "verification": "emit_only",
+      "compatible": [
+        "F43.2",
+        "F20",
+        "F32",
+        "F98",
+        "F39",
+        "F41.1",
+        "F43.1"
+      ],
+      "verificationCodes": [
+        "F20",
+        "F32",
+        "F98",
+        "F41.2",
+        "F51"
+      ],
+      "policy": "commit_primary_emit",
+      "finalization": "diagnostician_emit",
+      "vetoApplied": false,
+      "criteria": [
+        {
+          "code": "F20",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A3",
+              "status": "met"
+            },
+            {
+              "id": "A4",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B4",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F32",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C3",
+              "status": "met"
+            },
+            {
+              "id": "C4",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C5",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C6",
+              "status": "met"
+            },
+            {
+              "id": "C7",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F98",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "met"
+            },
+            {
+              "id": "A4",
+              "status": "met"
+            },
+            {
+              "id": "A5",
+              "status": "met"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F51",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.2",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F42",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "not_met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F31",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "not_met"
+            },
+            {
+              "id": "B3",
+              "status": "not_met"
+            },
+            {
+              "id": "B4",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "met"
+            },
+            {
+              "id": "C2",
+              "status": "met"
+            },
+            {
+              "id": "C3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.0",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B4",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F43.1",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.1",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "B4",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F39",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "met"
+            },
+            {
+              "id": "A3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A4",
+              "status": "met"
+            },
+            {
+              "id": "A5",
+              "status": "met"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F45",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "not_met"
+            },
+            {
+              "id": "C2",
+              "status": "not_met"
+            },
+            {
+              "id": "C3",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "F43.2",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "insufficient_evidence"
+            }
+          ]
+        },
+        {
+          "code": "Z71",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A1",
+              "status": "not_met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "not_met"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P015",
+      "sourceCaseId": "364295726",
+      "run": "test_da_canonical",
+      "model": "Qwen/Qwen3-32B-AWQ",
+      "gold": [
+        "F41"
+      ],
+      "primary": "F32",
+      "ranked": [
+        "F32",
+        "F43.2",
+        "F41.1",
+        "F51",
+        "F39"
+      ],
+      "verification": "emit_only",
+      "compatible": [
+        "F43.2",
+        "F32",
+        "F41.2",
+        "F39",
+        "F51",
+        "F98",
+        "F41.1",
+        "F43.1"
+      ],
+      "verificationCodes": [
+        "F32",
+        "F43.2",
+        "F41.1",
+        "F51",
+        "F39"
+      ],
+      "policy": "commit_primary_emit",
+      "finalization": "diagnostician_emit",
+      "vetoApplied": false,
+      "criteria": [
+        {
+          "code": "F51",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F43.2",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F32",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "C1",
+              "status": "met"
+            },
+            {
+              "id": "C2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C3",
+              "status": "met"
+            },
+            {
+              "id": "C4",
+              "status": "met"
+            },
+            {
+              "id": "C5",
+              "status": "met"
+            },
+            {
+              "id": "C6",
+              "status": "met"
+            },
+            {
+              "id": "C7",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F39",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "met"
+            },
+            {
+              "id": "A3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A4",
+              "status": "met"
+            },
+            {
+              "id": "A5",
+              "status": "met"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.1",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "met"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "B4",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F20",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A4",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B3",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B4",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "F31",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "not_met"
+            },
+            {
+              "id": "B2",
+              "status": "not_met"
+            },
+            {
+              "id": "B3",
+              "status": "not_met"
+            },
+            {
+              "id": "B4",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "met"
+            },
+            {
+              "id": "C2",
+              "status": "met"
+            },
+            {
+              "id": "C3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.2",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B",
+              "status": "met"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            },
+            {
+              "id": "D",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F41.0",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            },
+            {
+              "id": "B4",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F43.1",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "met"
+            },
+            {
+              "id": "B3",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F42",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "met"
+            },
+            {
+              "id": "B1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "B2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "Z71",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "not_met"
+            }
+          ]
+        },
+        {
+          "code": "F98",
+          "thresholdSatisfied": true,
+          "states": [
+            {
+              "id": "A1",
+              "status": "met"
+            },
+            {
+              "id": "A2",
+              "status": "not_met"
+            },
+            {
+              "id": "A3",
+              "status": "met"
+            },
+            {
+              "id": "A4",
+              "status": "met"
+            },
+            {
+              "id": "A5",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "A6",
+              "status": "met"
+            }
+          ]
+        },
+        {
+          "code": "F45",
+          "thresholdSatisfied": false,
+          "states": [
+            {
+              "id": "A",
+              "status": "not_met"
+            },
+            {
+              "id": "B",
+              "status": "not_met"
+            },
+            {
+              "id": "C1",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C2",
+              "status": "insufficient_evidence"
+            },
+            {
+              "id": "C3",
+              "status": "insufficient_evidence"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "cohort": {
+    "label": "內部 held-out · 1,000 筆合成對話",
+    "n": 1000,
+    "metrics": [
+      {
+        "run": "matched_baselines_hied_da_balanced",
+        "label": "HiED-DA · parent-balanced",
+        "n": 1000,
+        "top1": {
+          "count": 518,
+          "fraction": 0.518,
+          "claim": "CH6_matched_hied_da_balanced_top1"
+        },
+        "top3": {
+          "count": 802,
+          "fraction": 0.802,
+          "claim": "CH6_matched_hied_da_balanced_top3"
+        }
+      },
+      {
+        "run": "matched_baselines_single_balanced",
+        "label": "Single LLM · parent-balanced",
+        "n": 1000,
+        "top1": {
+          "count": 508,
+          "fraction": 0.508,
+          "claim": "CH6_retrieval_test_single_balanced_top1"
+        },
+        "top3": null
+      },
+      {
+        "run": "matched_baselines_tfidf_lr",
+        "label": "TF-IDF + Logistic Regression",
+        "n": 1000,
+        "top1": {
+          "count": 632,
+          "fraction": 0.632,
+          "claim": "CH6_matched_tfidf_lr_top1"
+        },
+        "top3": {
+          "count": 923,
+          "fraction": 0.923,
+          "claim": "CH6_matched_tfidf_lr_top3"
+        }
+      }
+    ],
+    "supportedNotSelected": {
+      "count": 272,
+      "n": 1000,
+      "claim": "CH6_d3rs_cell_110"
+    },
+    "note": "Top-1 為父類別標準標籤一致性；Top-3 為前 3 候選覆蓋。Single LLM 的舊 Top-3 主張已撤回，此處不顯示。不是臨床效能。"
+  },
+  "provenance": {
+    "repository": "HiED-Handover",
+    "commit": "4b90e7d1d23d84753cba6978965a5bc9df436670",
+    "references": [
+      {
+        "path": "annotation/hied_reports/P001.json",
+        "sha256": "c4d23aec2705301bf3f6eb9238149df130013f4a4fbc2fa7eb97fd1a6b243d13"
+      },
+      {
+        "path": "annotation/hied_reports/P010.json",
+        "sha256": "dfc540c910ac4351520b28e8534e3e0cf6cc4dd17ef00c685c8afc5daa917b6f"
+      },
+      {
+        "path": "annotation/hied_reports/P015.json",
+        "sha256": "76d16e4445d2ab25eb724344abbb2abae44ad16035b696bad0558d5184786724"
+      },
+      {
+        "path": "PAPER_CLAIMS.yaml",
+        "sha256": "e5aa4b3fdf5f6f8afa9db74eb34fd23067bfe2ba21767297c01cfe47a04d775d"
+      },
+      {
+        "path": "artifacts/paper/matched_baselines_hied_da_balanced/case_level_minimal.jsonl",
+        "sha256": "d6822ceb2fe02cad1165eb72ff27819b0d632a75bca33f6c15f43e12edd6a253"
+      },
+      {
+        "path": "artifacts/paper/matched_baselines_single_balanced/case_level_minimal.jsonl",
+        "sha256": "a9025af47ab8c7a0a66fb0c3e3037efb338372def6bfa0648e8fc246fe2ad403"
+      },
+      {
+        "path": "artifacts/paper/matched_baselines_tfidf_lr/case_level_minimal.jsonl",
+        "sha256": "0ebab059ebb67650a82bfb5bc937f783e24b792cad71f578b179cb8d4c467cbc"
+      },
+      {
+        "path": "artifacts/paper/internal_heldout_hied_da_canonical/case_level_minimal.jsonl",
+        "sha256": "98d121736d60db38736208bbd7066688659b588a35ca1ff142e3e8935f4d4959"
+      }
+    ],
+    "exportedFields": "Only label codes, criterion IDs/statuses, output-policy metadata and aggregate counts. No transcripts, evidence quotes or model reasoning."
+  }
 }

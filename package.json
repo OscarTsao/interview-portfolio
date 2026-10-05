@@ -8,17 +8,19 @@
     "products/bitoguard"
   ],
   "scripts": {
-    "prepare:assets": "node scripts/prepare-demo-assets.mjs",
+    "prepare:assets": "node scripts/prepare-demo-assets.mjs && node scripts/prepare-coursework-products.mjs",
     "setup:local": "npm run prepare:assets && npm run db:local --workspace cloudflare",
     "dev": "node scripts/demo-dev.mjs",
     "build": "npm run build:bitoguard && npm run prepare:assets && npm run build --workspace portfolio && npm run build --workspace cloudflare",
     "build:bitoguard": "npm run build --workspace bitoguard_frontend && node scripts/prepare-bitoguard-assets.mjs",
-    "test:demo": "node --test test/cloudflare-demo.test.mjs",
+    "test:demo": "node --test test/cloudflare-demo.test.mjs test/store.test.mjs test/nutrition.test.mjs test/fighter.test.mjs test/coursework-chat.test.mjs",
+    "test:products": "node scripts/verify-store-browser.mjs && node scripts/verify-nutrition-browser.mjs && node scripts/verify-realtime-browser.mjs && node scripts/verify-hied-browser.mjs",
     "test:design": "node scripts/verify-design-quality.mjs",
     "check:demo": "npm run check --workspace cloudflare"
   },
   "devDependencies": {
     "axe-core": "4.13.0",
+    "chart.js": "4.5.1",
     "typescript": "6.0.3",
     "ws": "8.22.0"
   }

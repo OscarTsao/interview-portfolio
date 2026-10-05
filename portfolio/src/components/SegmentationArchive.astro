@@ -1,0 +1,109 @@
+<section class="archive" aria-labelledby="archive-title">
+  <div class="heading"><div><p class="eyebrow">SAVED SEGMENTATION RESULTS</p><h2 id="archive-title">看模型結果，也看失敗案例。</h2></div><span class="badge">研究簡報封存 · 本機查看</span></div>
+  <p>從 Handover 研究備份找回 AG-PCV 與 SM-MT 的分割比較圖。以下選取來源簡報的兩個相對改善案例與第一個失敗案例，用來比較模型行為，不代表整體效能。</p>
+  <div hidden={!import.meta.env.DEV}>
+    <fieldset id="archive-controls" disabled>
+      <legend class="sr-only">封存結果控制</legend>
+      <label for="archive-case">選擇比較案例</label>
+      <select id="archive-case"><option value="">載入中…</option></select>
+      <a id="archive-link" href="?result=result-01">此結果連結 →</a>
+    </fieldset>
+    <p id="archive-status" role="status">正在載入封存結果…</p>
+    <button id="archive-retry" type="button" hidden>重新載入結果</button>
+    <div id="archive-content" hidden aria-busy="true">
+      <div class="panels">
+        <figure><figcaption><strong>參考影像</strong><span>來源簡報的紅色病灶輪廓</span></figcaption><div class="image-frame"><img id="archive-reference" alt=""/></div></figure>
+        <figure><figcaption><strong>AG-PCV</strong><span>來源簡報的模型疊圖</span></figcaption><div class="image-frame"><img id="archive-baseline" alt=""/></div></figure>
+        <figure><figcaption><strong>SM-MT</strong><span>來源簡報的模型疊圖</span></figcaption><div class="image-frame"><img id="archive-smmt" alt=""/></div></figure>
+      </div>
+      <ul class="legend" aria-label="來源簡報的疊圖圖例">
+        <li><i class="over" aria-hidden="true"></i>紅色 OS：多判的區域</li>
+        <li><i class="under" aria-hidden="true"></i>綠色 US：漏判的區域</li>
+        <li><i class="true" aria-hidden="true"></i>黃色 TP：預測與標註重疊</li>
+      </ul>
+      <p class="small">保留原研究圖的配色與內容，畫面等比例縮放。三張圖供視覺比較，沒有重新對齊像素或反推二值遮罩；下方互動標註仍使用紅色。</p>
+      <div class="evidence">
+        <table><caption>來源簡報記錄的 DSC（Dice）</caption><thead><tr><th scope="col">方法</th><th scope="col">DSC</th></tr></thead><tbody><tr><th scope="row">AG-PCV</th><td id="archive-baseline-dice"></td></tr><tr><th scope="row">SM-MT</th><td id="archive-smmt-dice"></td></tr></tbody></table>
+        <div><p id="archive-observation"></p><p class="small">數值按簡報原值列出，未由這些疊圖重新計算，也不是這次重新推論的結果。HD 的定義與尺度仍待核對，暫不呈現。</p><p id="archive-source" class="small"></p></div>
+      </div>
+    </div>
+  </div>
+  {!import.meta.env.DEV&&<p class="availability">已找回的研究比較圖僅供本機檢視，尚未確認公開影像範圍。公開版保留研究方法與來源說明。</p>}
+  <p class="boundary">這是研究封存中的模型比較圖；逐案對應最終 TVST 論文、完整 checkpoint，以及獨立預測／後處理遮罩的證據仍待補齊。</p>
+</section>
+
+<script>
+const get=<T extends HTMLElement>(id:string)=>document.getElementById(id) as T;
+const controls=get<HTMLFieldSetElement>('archive-controls');
+const select=get<HTMLSelectElement>('archive-case');
+const status=get('archive-status');
+const content=get('archive-content');
+const retry=get<HTMLButtonElement>('archive-retry');
+const roles=['reference','baseline','smmt'] as const;
+type Role=typeof roles[number];
+type ResultCase={id:string;label:string;sourceSlide:number;selection:'better'|'worse';images:Record<Role,{file:string;width:number;height:number}>;recordedDice:{baseline:number;smmt:number};observation:string};
+let records:ResultCase[]=[];
+let urls:string[]=[];
+function validCase(value:unknown,index:number):value is ResultCase{
+  if(!value||typeof value!=='object')return false;
+  const c=value as ResultCase;
+  return c.id==='result-0'+(index+1)&&typeof c.label==='string'&&typeof c.observation==='string'&&[3,4,10][index]===c.sourceSlide&&c.selection===(index===2?'worse':'better')&&roles.every(role=>{
+    const img=c.images?.[role];return img?.file===c.id+'-'+role+'.png'&&Number.isInteger(img.width)&&Number.isInteger(img.height)&&img.width>0&&img.height>0&&img.width<=4096&&img.height<=4096;
+  })&&['baseline','smmt'].every(role=>{const value=c.recordedDice?.[role as 'baseline'|'smmt'];return Number.isFinite(value)&&value>=0&&value<=100;});
+}
+async function render(){
+  const item=records.find(c=>c.id===select.value);if(!item)return;
+  controls.disabled=true;retry.hidden=true;content.hidden=true;content.setAttribute('aria-busy','true');
+  status.textContent='正在載入 '+item.label+' 的三張比較圖…';
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
+  const fresh:string[]=[];
+  try{
+    for(const role of roles){
+      const spec=item.images[role];
+      const response=await fetch(import.meta.env.BASE_URL+'demo-data/segmentation-results/'+spec.file,{signal:controller.signal});
+      if(!response.ok)throw Error('image');
+      const url=URL.createObjectURL(await response.blob());fresh.push(url);
+      const img=new Image();img.src=url;await img.decode();
+      if(img.naturalWidth!==spec.width||img.naturalHeight!==spec.height)throw Error('dimensions');
+    }
+    for(const [i,role] of roles.entries()){
+      const img=get<HTMLImageElement>('archive-'+role);img.src=fresh[i];img.width=item.images[role].width;img.height=item.images[role].height;
+      img.alt=item.label+'：'+(role==='reference'?'附紅色病灶輪廓的參考影像':role==='baseline'?'AG-PCV 分割比較疊圖':'SM-MT 分割比較疊圖');
+    }
+    urls.forEach(URL.revokeObjectURL);urls=fresh.splice(0);
+    get('archive-baseline-dice').textContent=item.recordedDice.baseline.toFixed(2);
+    get('archive-smmt-dice').textContent=item.recordedDice.smmt.toFixed(2);
+    get('archive-observation').textContent=item.observation;
+    get('archive-source').textContent='來源：Handover_images.pptx，第 '+item.sourceSlide+' 頁。影像自簡報擷取，位元組保持一致。';
+    const url=new URL(location.href);url.searchParams.set('result',item.id);history.replaceState(null,'',url);
+    get<HTMLAnchorElement>('archive-link').href=url.pathname+url.search;
+    status.textContent=item.label+' · 已載入封存比較圖與簡報記錄值。';
+    content.hidden=false;
+  }catch{
+    status.textContent='封存結果未完整載入，或影像尺寸不符。請重試或切換其他案例。';retry.hidden=false;
+  }finally{fresh.forEach(URL.revokeObjectURL);clearTimeout(timeout);controls.disabled=false;content.setAttribute('aria-busy','false');}
+}
+async function load(){
+  controls.disabled=true;retry.hidden=true;content.hidden=true;
+  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const response=await fetch(import.meta.env.BASE_URL+'demo-data/segmentation-results/manifest.json',{signal:controller.signal});
+    if(!response.ok)throw Error('manifest');
+    const data=await response.json();
+    if(data.source?.name!=='Handover_images.pptx'||data.source?.kind!=='archived-research-presentation'||!Array.isArray(data.cases)||data.cases.length!==3||!data.cases.every(validCase))throw Error('schema');
+    records=data.cases;select.replaceChildren(...records.map(c=>new Option(c.label,c.id)));
+    const requested=new URL(location.href).searchParams.get('result');select.value=records.some(c=>c.id===requested)?requested!:'result-01';
+  }catch{
+    records=[];select.replaceChildren(new Option('結果未載入',''));status.textContent='本機封存結果尚未提供或格式不符。研究說明仍可閱讀。';retry.hidden=false;content.setAttribute('aria-busy','false');return;
+  }finally{clearTimeout(timeout);}
+  await render();
+}
+select.addEventListener('change',render);
+retry.addEventListener('click',()=>records.length?render():load());
+if(import.meta.env.DEV)load();
+</script>
+
+<style>
+.evidence> *{min-width:0}.archive table{min-width:0}.archive .image-frame img{width:100%;height:100%;object-fit:contain}
+.archive{padding:28px;border:1px solid var(--border);border-radius:16px;background:var(--surface);margin-bottom:28px}.heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.heading h2{margin-bottom:12px}.heading .eyebrow{margin-bottom:6px}.badge{border-radius:24px;background:var(--tint);color:var(--primary);font-size:14px;padding:5px 12px;font-weight:650}.archive>p{max-width:900px}.archive [hidden]{display:none!important}fieldset{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:0;border-top:1px solid var(--border);padding:20px 0 0;margin:22px 0 0;min-width:0}label{font-size:14px;font-weight:650}button,select{min-height:44px;padding:8px 12px;border:1px solid var(--control);border-radius:8px;background:var(--surface);color:var(--ink);max-width:100%}a{min-height:44px;display:inline-flex;align-items:center}#archive-status{font-size:14px;margin:18px 0}.panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.panels figure{margin:0;min-width:0}figcaption{display:grid;gap:4px;margin-bottom:12px}figcaption span{font-size:13px;color:var(--muted)}.image-frame{aspect-ratio:1;background:#000;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}.image-frame img{display:block;max-width:100%;max-height:100%;width:auto;height:auto}.legend{display:flex;gap:12px 24px;flex-wrap:wrap;list-style:none;padding:0;margin:18px 0 10px;font-size:14px}.legend li{display:flex;align-items:center;gap:7px}.legend i{width:14px;height:14px;border:1px solid #333;border-radius:3px}.over{background:#c00000}.under{background:#548235}.true{background:#ffd966}.small,.boundary{font-size:14px;color:var(--muted)}.evidence{display:grid;grid-template-columns:minmax(200px,.65fr) minmax(0,1.5fr);gap:24px;border-top:1px solid var(--border);padding-top:20px;margin-top:20px}table{width:100%;border-collapse:collapse;align-self:start;font-size:15px}caption{text-align:left;font-size:14px;font-weight:650;margin-bottom:10px;color:var(--ink)}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--border)}td{font-variant-numeric:tabular-nums}thead{background:var(--tint)}.boundary{border-top:1px solid var(--border);padding-top:18px;margin:20px 0 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:720px){.archive{padding:18px}.panels,.evidence{grid-template-columns:1fr}.panels{gap:24px}.image-frame{max-width:420px}.evidence{gap:16px}.heading h2{font-size:25px}}
+</style>

@@ -4,16 +4,21 @@ const base=import.meta.env.BASE_URL;
 ---
 <Site title="HiED — 凍結研究案例" description="比較 HiED 凍結案例的標準父類別、候選排序與主要輸出；保留來源與選例限制。" image="images/hied.png">
 <a class="back" href={base+'projects/hied/'}>← 回到 HiED 研究介紹</a>
-<section class="case-hero"><p class="eyebrow">HIED · FROZEN RESEARCH</p><h1>從同一案例，<br/>檢視不同輸出。</h1><p>先辨認資料集標準父類別，再比較候選排序與最終主要輸出。切換案例，觀察它們之間的分歧。</p></section>
+<section class="case-hero"><p class="eyebrow">HIED · FROZEN RESEARCH</p><h1>從同一案例，<br/>追蹤推理中的分歧。</h1><p>從候選排序、準則狀態到最終輸出，檢查模型在哪一步保留或放棄參考類別，再對照完整評估群體。</p></section>
 <div class="research-content">
 <aside class="note">這三個案例選自 LingxiDiag-16K 的 20 案 D3-I-S 分歧標註子集，不能代表整體效能。此頁只讀取預先分析結果，沒有即時推論或臨床判讀。</aside>
-<ol class="method-flow" aria-label="案例閱讀順序"><li><strong>1. 看參照</strong><span>資料集給出的標準父類別是什麼？</span></li><li><strong>2. 看排序</strong><span>模型列出哪些候選，先後順序如何？</span></li><li><strong>3. 看輸出</strong><span>最終主要輸出與候選排序如何對應？</span></li></ol>
-<p>標準父類別與候選標籤的粒度不同，不能單以字串是否相等判定命中。此頁沒有重新計算效能，也沒有展示完整準則相容集合。</p>
+<ol class="method-flow" aria-label="案例閱讀順序"><li><strong>1. 候選 D3</strong><span>前 3 名是否包含資料集參考父類別？</span></li><li><strong>2. 準則相容 I</strong><span>規則輸出的相容集合是否包含參考父類別？</span></li><li><strong>3. 最終選擇 S</strong><span>主要輸出是否對應參考父類別？</span></li></ol>
+<p>標準父類別與候選的細類別粒度不同；例如 F41.1 對應 F41。這是凍結研究輸出的檢視工具，準則標記及相容集合都不是臨床診斷。</p>
 <div class="case-controls"><label for="cases">選擇案例</label><select id="cases" disabled><option>載入中…</option></select><button id="reset-case" disabled>回到 P001</button><a id="case-link" href="?case=P001">此案例永久連結</a></div>
 <p id="case-status" role="status">正在載入凍結案例…</p><button id="retry" hidden>重新載入案例</button><noscript><p>案例切換需要 JavaScript。你仍可閱讀上方方法說明，或回到研究介紹了解流程與限制。</p></noscript>
 <section id="case" aria-live="polite" aria-label="凍結案例內容" aria-busy="true"></section>
-<details class="source-details"><summary>如何理解來源與狀態</summary><p>P015 是論文附錄案例。「原始驗證狀態」保留研究輸出的代碼，並不是這個網頁重新驗證的結果。來源案例編號、模型名稱與凍結執行名稱用於追溯同一份輸出。</p><p>目前只匯出最小標籤、排序與來源欄位，不包含訪談逐字稿。案例來自特定分歧子集，不用來代表整體資料分布。</p><p id="source"></p><p><a href="https://huggingface.co/datasets/mirobody/LingxiDiag-16K" target="_blank" rel="noopener noreferrer">LingxiDiag-16K 資料說明 ↗</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0 授權 ↗</a></p></details>
+<section id="criteria-panel" hidden aria-labelledby="criteria-title"><h2 id="criteria-title">查看準則檢查</h2><p>選擇診斷代碼，檢視該次執行留下的準則 ID 與三態結果。未滿足、資料不足及已滿足分開顯示；不包含訪談引文或模型推理文字。</p><div class="case-controls"><label for="disorder">診斷代碼</label><select id="disorder"></select><label class="criteria-filter"><input id="unresolved" type="checkbox"/> 只看未滿足／資料不足</label></div><p id="criterion-summary" role="status"></p><div class="table-wrap" tabindex="0" role="region" aria-label="準則狀態表"><table><thead><tr><th scope="col">準則 ID</th><th scope="col">凍結檢查狀態</th></tr></thead><tbody id="criterion-rows"></tbody></table></div><p id="policy"></p></section>
+<section id="cohort-panel" hidden aria-labelledby="cohort-title"><p class="eyebrow">FROZEN EVALUATION · N = 1,000</p><h2 id="cohort-title">把個案放回整體結果</h2><p>以下來自相同 1,000 筆內部 held-out 合成對話，與上方特選的三個外顯分歧案例分開閱讀。這些指標衡量父類別標籤一致性與候選覆蓋，不能解讀為真實病人的診斷效能。</p><div class="table-wrap" tabindex="0" role="region" aria-label="凍結模型比較"><table><thead><tr><th scope="col">方法</th><th scope="col">Top-1 一致</th><th scope="col">Top-3 覆蓋</th></tr></thead><tbody id="cohort-rows"></tbody></table></div><p id="joint-result" class="note"></p><p>HiED-DA 在這個群體的 Top-1 低於詞彙基準。研究重點是讓排序、準則與選擇的分歧可以被檢查，不能僅以多代理架構推定效能更好。Single LLM 的舊 Top-3 主張因定義對齊而撤回，此處不列數值。</p></section>
+<details class="source-details"><summary>來源、核驗與資料範圍</summary><p>P015 是論文附錄案例。「原始驗證狀態」及輸出政策保留研究輸出的代碼。準則狀態逐項摘錄自三份凍結報告；群體數值由去識別的逐案結果重新計數，並核對 PAPER_CLAIMS.yaml 的現行主張。沒有重新呼叫模型。</p><p>匯出欄位限定為代碼、準則 ID／狀態、政策與彙整數量，不包含訪談逐字稿、證據引文或模型推理內容。資料檔附有來源版本、檔案雜湊與主張 ID。</p><p id="source"></p><p><a href={base+'demo-data/hied.json'} download="hied-frozen-evidence.json">下載本頁凍結資料（JSON）</a></p><p><a href="https://huggingface.co/datasets/mirobody/LingxiDiag-16K" target="_blank" rel="noopener noreferrer">LingxiDiag-16K 資料說明 ↗</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0 授權 ↗</a></p></details>
 </div>
+<style is:global>
+.research-content #criteria-panel,.research-content #cohort-panel{border-top:1px solid var(--border);padding-top:28px;margin:36px 0}.research-content table{width:100%;border-collapse:collapse;min-width:480px}.research-content th,.research-content td{padding:12px 16px;border-bottom:1px solid var(--border);text-align:left}.research-content th{color:var(--ink);background:var(--surface)}.research-content td{font-variant-numeric:tabular-nums}.research-content .criteria-filter{display:flex;gap:10px;align-items:center;min-height:44px}.research-content .criteria-filter input{width:20px;height:20px}.research-content .criterion-met{color:#156536}.research-content .criterion-not_met{color:#aa2638}.research-content .criterion-insufficient_evidence{color:#885100}.research-content #policy,.research-content #source{font-size:14px;overflow-wrap:anywhere}.research-content #cohort-title{margin-top:8px}@media(max-width:600px){.research-content #criteria-panel table{min-width:0}.research-content .case-controls select{max-width:100%}}
+</style>
 <script define:vars={{base}}>
 const select=document.querySelector('#cases');
 const section=document.querySelector('#case');
@@ -22,33 +27,57 @@ const retry=document.querySelector('#retry');
 const reset=document.querySelector('#reset-case');
 const link=document.querySelector('#case-link');
 let records=[];
+const node=(tag,text)=>{const el=document.createElement(tag);el.textContent=text;return el;};
+const parent=code=>code.split('.')[0];
+const stateNames={met:'已滿足',not_met:'未滿足',insufficient_evidence:'資料不足'};
+const disorder=document.querySelector('#disorder'),unresolved=document.querySelector('#unresolved');
+function renderCriteria(){
+  const c=records.find(item=>item.id===select.value),checker=c?.criteria.find(item=>item.code===disorder.value);if(!checker)return;
+  const rows=document.querySelector('#criterion-rows');rows.replaceChildren();
+  const visible=checker.states.filter(item=>!unresolved.checked||item.status!=='met');
+  for(const item of visible){const row=document.createElement('tr'),id=node('th',item.id);id.scope='row';const cell=node('td',stateNames[item.status]);cell.className='criterion-'+item.status;row.append(id,cell);rows.append(row);}
+  if(!visible.length){const row=document.createElement('tr'),cell=node('td','沒有符合篩選的準則。');cell.colSpan=2;row.append(cell);rows.append(row);}
+  document.querySelector('#criterion-summary').textContent=`${checker.code}：共 ${checker.states.length} 項，已滿足 ${checker.states.filter(s=>s.status==='met').length}、未滿足 ${checker.states.filter(s=>s.status==='not_met').length}、資料不足 ${checker.states.filter(s=>s.status==='insufficient_evidence').length}。原始 threshold_satisfied：${checker.thresholdSatisfied?'true':'false'}。`;
+}
+function renderCohort(data){
+ const rows=document.querySelector('#cohort-rows');rows.replaceChildren();const format=value=>value?`${(value.fraction*100).toFixed(1)}% · ${value.count}/1,000`:'未列（定義未對齊）';
+ for(const metric of data.metrics){const row=document.createElement('tr'),label=node('th',metric.label);label.scope='row';row.append(label,node('td',format(metric.top1)),node('td',format(metric.top3)));rows.append(row);}
+ document.querySelector('#joint-result').textContent=`${data.supportedNotSelected.count}/1,000 案（${(data.supportedNotSelected.count/data.n*100).toFixed(1)}%）屬於 D3=1、I=1、S=0：參考父類別已進入前三候選且存在於準則相容集合，卻未成為主要輸出。`;
+ document.querySelector('#cohort-panel').hidden=false;
+}
 function render(){
   const c=records.find(item=>item.id===select.value);
   if(!c)return;
   section.replaceChildren();
-  for(const [label,value] of [['資料集標準父類別',c.gold.join(', ')],['候選排序',c.ranked.join(' → ')],['模型主要輸出',c.primary],['原始驗證狀態',c.verification],['模型',c.model],['凍結執行',c.run],['來源案例',c.sourceCaseId]]){
+  const matches=codes=>codes.some(code=>c.gold.includes(parent(code)));
+  for(const [label,value] of [['資料集標準父類別',c.gold.join(', ')],['候選排序',c.ranked.join(' → ')],['模型主要輸出',c.primary],['D3 · 前三候選',matches(c.ranked.slice(0,3))?'包含參考父類別':'未包含參考父類別'],['I · 準則相容集合',c.compatible.join('、')+'；'+(matches(c.compatible)?'包含參考父類別':'未包含參考父類別')],['S · 最終選擇',matches([c.primary])?'符合參考父類別':'未選擇參考父類別'],['原始驗證狀態',c.verification],['模型',c.model],['凍結執行',c.run],['來源案例',c.sourceCaseId]]){
     const card=document.createElement('article');const h=document.createElement('h2');const p=document.createElement('p');
     h.textContent=label;p.textContent=value;card.append(h,p);section.append(card);
   }
   const url=new URL(location.href);url.searchParams.set('case',c.id);history.replaceState(null,'',url);
   link.href=url.pathname+url.search;
   status.textContent='目前查看 '+c.id+' · 凍結結果，沒有重新執行模型。';
+  disorder.replaceChildren(...c.criteria.map(item=>new Option(item.code,item.code)));disorder.value=c.criteria.some(item=>item.code===c.primary)?c.primary:c.criteria[0].code;
+  unresolved.checked=false;document.querySelector('#criteria-panel').hidden=false;renderCriteria();
+  document.querySelector('#policy').textContent=`原始輸出政策：${c.policy}；最終來源：${c.finalization}；veto_applied：${c.vetoApplied}。這是封存執行紀錄，不表示每項準則均已滿足。`;
 }
 async function load(){
   select.disabled=true;reset.disabled=true;retry.hidden=true;section.setAttribute('aria-busy','true');
   status.textContent='正在載入凍結案例…';
+  section.replaceChildren();document.querySelector('#criteria-panel').hidden=true;document.querySelector('#cohort-panel').hidden=true;
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
   try{
     const response=await fetch(base+'demo-data/hied.json',{signal:controller.signal});
     if(!response.ok)throw new Error('load');
     const data=await response.json();
-    if(!Array.isArray(data.cases)||data.cases.length!==3||!data.cases.every(c=>['P001','P010','P015'].includes(c.id)&&Array.isArray(c.gold)&&Array.isArray(c.ranked)&&[c.primary,c.verification,c.model,c.run,c.sourceCaseId].every(x=>typeof x==='string')))throw new Error('data');
+    if(!Array.isArray(data.cases)||data.cases.length!==3||new Set(data.cases.map(c=>c.id)).size!==3||!data.cases.every(c=>['P001','P010','P015'].includes(c.id)&&[c.gold,c.ranked,c.compatible].every(values=>Array.isArray(values)&&values.every(x=>typeof x==='string'))&&[c.primary,c.verification,c.model,c.run,c.sourceCaseId,c.policy,c.finalization].every(x=>typeof x==='string')&&Array.isArray(c.criteria)&&c.criteria.length&&c.criteria.every(checker=>typeof checker.code==='string'&&typeof checker.thresholdSatisfied==='boolean'&&Array.isArray(checker.states)&&checker.states.every(s=>typeof s.id==='string'&&Object.hasOwn(stateNames,s.status)))))throw new Error('data');
+    if(data.cohort?.n!==1000||!Array.isArray(data.cohort.metrics)||data.cohort.metrics.length!==3||!data.cohort.metrics.every(row=>row.n===1000&&[row.top1,row.top3].every(value=>value===null||Number.isInteger(value.count)&&value.count>=0&&value.count<=row.n&&value.fraction===value.count/row.n))||data.cohort.supportedNotSelected?.count!==272)throw new Error('cohort');
     records=data.cases;
     select.replaceChildren(...records.map(c=>new Option(c.id+(c.id==='P015'?' · 論文附錄案例':''),c.id)));
     const requested=new URL(location.href).searchParams.get('case');
     select.value=records.some(c=>c.id===requested)?requested:'P001';
-    document.querySelector('#source').textContent='來源：'+data.source;
-    select.disabled=false;reset.disabled=false;render();
+    document.querySelector('#source').textContent='來源：'+data.source+' · 來源版本 '+data.provenance.commit.slice(0,12);
+    select.disabled=false;reset.disabled=false;render();renderCohort(data.cohort);
   }catch{
     status.textContent='暫時無法載入案例。研究說明仍可閱讀，請重新載入或稍後再試。';retry.hidden=false;
     select.replaceChildren(new Option('案例尚未載入',''));
@@ -57,6 +86,7 @@ async function load(){
 select.addEventListener('change',render);
 reset.addEventListener('click',()=>{select.value='P001';render();select.focus();});
 retry.addEventListener('click',load);
+disorder.addEventListener('change',renderCriteria);unresolved.addEventListener('change',renderCriteria);
 load();
 </script>
 </Site>

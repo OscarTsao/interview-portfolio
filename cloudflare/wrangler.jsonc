@@ -3,21 +3,55 @@
   "name": "oscar-interview-demos",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-02",
+  "secrets": {
+    "required": [
+      "FATSECRET_KEY",
+      "FATSECRET_SECRET"
+    ]
+  },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "durable_objects": {
-    "bindings": [{ "name": "ROOMS", "class_name": "ChatRoom" }]
+    "bindings": [
+      {
+        "name": "ROOMS",
+        "class_name": "ChatRoom"
+      },
+      {
+        "name": "COURSEWORK_CHAT",
+        "class_name": "CourseworkChat"
+      }
+    ]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ChatRoom"] }],
-  "d1_databases": [{
-    "binding": "DEMO_DB",
-    "database_name": "oscar-interview-demo",
-    "database_id": "763f914a-ae91-46f7-9ba8-99bc3ad16680",
-    "migrations_dir": "migrations"
-  }],
-  "observability": { "enabled": false }
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "ChatRoom"
+      ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": [
+        "CourseworkChat"
+      ]
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DEMO_DB",
+      "database_name": "oscar-interview-demo",
+      "database_id": "763f914a-ae91-46f7-9ba8-99bc3ad16680",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
 }

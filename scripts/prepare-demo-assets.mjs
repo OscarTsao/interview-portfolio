@@ -26,7 +26,7 @@ for (const [app, files] of [['hw1-portfolio',['index.html','style.css','reset.cs
   }
   await writeFile(`${target}/index.html`, html);
 }
-// Export only label/ranking fields from selected frozen synthetic cases, never transcripts.
+// Copy the allowlisted frozen results, criterion statuses and cohort counts, never transcripts.
 await mkdir(`${root}portfolio/public/demo-data`,{recursive:true});
 await cp(`${root}portfolio/data/hied.json`,`${root}portfolio/public/demo-data/hied.json`);
-console.log('已準備課程靜態素材與 HiED 最小案例欄位。');
+console.log('已準備課程靜態素材與 HiED 凍結案例、準則狀態及評估摘要。');

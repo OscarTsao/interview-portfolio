@@ -1,0 +1,12 @@
+---
+import evidence from '../../data/bitoguard-evidence.json';
+---
+<section id="ml-evidence"><h2>我的 ML 與部署工作</h2><p>我主要負責特徵工程、模型流程、風險解釋、系統架構與 AWS 部署。下方依原始程式與 Model Card 說明工程內容；互動 Demo 的帳戶和數值仍是合成資料。</p>
+<ol class="method-flow" aria-label="BitoGuard 原模型資料流程"><li><strong>資料 → 特徵</strong><span>交易與行為快照、標籤有效日期、時間切分與資料品質檢查。</span></li><li><strong>模型 → 評估</strong><span>LightGBM、IsolationForest、規則及圖風險；先對照簡單基準。</span></li><li><strong>解釋 → 案件</strong><span>特徵貢獻、命中規則與關聯證據整理成可審查報告。</span></li></ol>
+<h3>高分為什麼還需要查證？</h3><p>原 Model Card 記錄三種會使成效虛高的資料問題：未來快照回填、正例跨日期重複，以及黑名單帳戶全部沒有活動。我的資料檢查與基準對照聚焦於辨識這些問題。</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="原始模型紀錄與限制"><table><thead><tr><th scope="col">元件</th><th scope="col">Model Card 紀錄</th><th scope="col">如何解讀</th></tr></thead><tbody><tr><th scope="row">M0 Dormancy</th><td>PR-AUC 0.9823</td><td>只辨識是否沒有活動的簡單基準，顯示資料捷徑已很強。</td></tr><tr><th scope="row">M3 LightGBM</th><td>Precision 0.9975；Recall 1.0</td><td>來源明示受資料問題影響，不能用作泛化能力的證明。</td></tr><tr><th scope="row">M4 IsolationForest</th><td>PR-AUC 0.9724</td><td>來源將它列為可用的異常訊號；此輪未重新訓練或獨立重算。</td></tr><tr><th scope="row">M5 Graph Risk</th><td>預設 trusted-only</td><td>停用不可信的裝置與黑名單鄰近特徵，避免假關聯造成高分。</td></tr></tbody></table></div>
+<p class="note">這張表是原 Model Card 的歷史紀錄，不是互動 Demo 的模型分數，也不是這次重新訓練的結果。PR-AUC 保留來源用語；沒有用介面合成曲線替代原始評估。</p>
+<h3>AWS 工程證據</h3><p>原儲存庫具備容器與基礎設施程式：Next.js／FastAPI 的 ECS task、ALB 路由、ECR、EFS、網路與權限設定；ML 流程另有 ECS 工作、Step Functions、Lambda、S3 與模型登錄的定義。這些是可檢查的部署資產，不能單靠檔案存在就斷言所有 AWS 服務目前正在運行。</p><p>現在的零新增費用展示採用 GitHub Pages 與 Cloudflare。模型服務採預先準備的展示回應，因此面試時可以先完整操作產品，再討論原 ML 後端和部署設計。</p>
+<details><summary>已核對的來源檔案</summary><p>來源版本：<code>{evidence.commit.slice(0,12)}</code>；此清單保留檔案雜湊，沒有複製模型權重、交易資料或雲端憑證。</p><ul>{evidence.references.map(reference=><li><code>{reference.path}</code><br/><small>SHA-256 {reference.sha256.slice(0,16)}…</small></li>)}</ul></details>
+</section>
+<style>code{overflow-wrap:anywhere;font-size:13px}small{font-size:12px}li{overflow-wrap:anywhere}</style>

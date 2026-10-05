@@ -1,8 +1,11 @@
 import { ChatRoom } from './room';
 import { bitoguard } from './bitoguard';
-export { ChatRoom };
+import { nutrition, type NutritionEnv } from './nutrition';
+import { CourseworkChat } from './coursework-chat';
+import { store } from './store';
+export { ChatRoom, CourseworkChat };
 
-export interface Env { ASSETS: Fetcher; DEMO_DB: D1Database; ROOMS: DurableObjectNamespace<ChatRoom>; }
+export interface Env extends NutritionEnv { ASSETS: Fetcher; DEMO_DB: D1Database; ROOMS: DurableObjectNamespace<ChatRoom>; COURSEWORK_CHAT: DurableObjectNamespace<CourseworkChat>; }
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
 const foods = [
   { id: 'rice', name: '示範飯碗', category: '主食', calories: 250, protein: 5, carbs: 52, fat: 2 },
@@ -45,7 +48,9 @@ export default {
     const visitor = await identity(request);
     let response: Response;
     try {
-      if (url.pathname.startsWith('/api/bitoguard/')) response = await bitoguard(request, env, visitor.sid, body);
+      if (url.pathname.startsWith('/api/nutrition/')) response = await nutrition(request, env);
+      else if (url.pathname.startsWith('/api/store/')) response = await store(request,env.DEMO_DB,visitor.sid);
+      else if (url.pathname.startsWith('/api/bitoguard/')) response = await bitoguard(request, env, visitor.sid, body);
       else if (url.pathname === '/api/session' && request.method === 'GET') response = json({ id: visitor.publicId });
       else if (url.pathname === '/api/products' && request.method === 'GET') response = json((await env.DEMO_DB.prepare('SELECT * FROM products ORDER BY id').all()).results);
       else if (url.pathname === '/api/nutrition' && request.method === 'GET') response = json({ source: 'synthetic-interface-fixtures', foods: foods.filter(f => f.name.includes(url.searchParams.get('q') || '') || f.category.includes(url.searchParams.get('q') || '')) });
@@ -70,6 +75,15 @@ export default {
         await env.DEMO_DB.prepare('DELETE FROM orders WHERE visitor = ?').bind(visitor.sid).run();
         response = json({ ok: true });
       } else {
+        const lobby=url.pathname.match(/^\/api\/chat\/([a-z0-9-]{1,40})\/websocket$/);
+        if(lobby&&request.method==='GET'&&request.headers.get('Upgrade')==='websocket'){
+          const tab=url.searchParams.get('client')||'';
+          if(!/^[a-f0-9]{32}$/.test(tab))return json({error:'分頁識別碼無效'},400);
+          const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(visitor.publicId+tab));
+          const headers=new Headers(request.headers);headers.set('X-Demo-Identity',Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join(''));
+          headers.set('X-Demo-Name',encodeURIComponent((url.searchParams.get('name')||'訪客').trim().slice(0,24)||'訪客'));
+          return env.COURSEWORK_CHAT.get(env.COURSEWORK_CHAT.idFromName(lobby[1])).fetch(new Request(request,{headers}));
+        }
         const room = url.pathname.match(/^\/api\/rooms\/([a-z0-9-]{1,40})\/websocket$/);
         if (room && request.method === 'GET' && request.headers.get('Upgrade') === 'websocket') {
           const headers = new Headers(request.headers);

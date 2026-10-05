@@ -1,0 +1,34 @@
+{
+  "commit": "4727c4712798541c98b3e36d393800ba96bd2fa0",
+  "references": [
+    {
+      "path": "docs/MODEL_CARD.md",
+      "sha256": "db9a57b986581d383f18cb85210186651ca2a3cc14c96534e3a76e3848464ecf"
+    },
+    {
+      "path": "infra/aws/terraform/ecs.tf",
+      "sha256": "6a5d8452b101947f792ee7760d5d75214205e71ec22f3f69644b88dc1dc66913"
+    },
+    {
+      "path": "infra/aws/terraform/alb.tf",
+      "sha256": "8cb17f0390b7bcbacc55a3c4797f9fc7b0d45fdd6d627fc5f06365b38717b885"
+    },
+    {
+      "path": "infra/aws/terraform/ecs_ml_tasks.tf",
+      "sha256": "05562e69ff07fc8cefa7d47ac0d9c1ca1c10282a3384fcd99d6736ccec35e6bf"
+    },
+    {
+      "path": "infra/aws/terraform/step_functions.tf",
+      "sha256": "a9e7cc6e54d91da62bf2ff54d283dfab9bb80c7a9421b126b304dfb27b38ef26"
+    },
+    {
+      "path": "infra/aws/terraform/sagemaker_model_registry.tf",
+      "sha256": "342b6dcdac1799baff89a17f8b5c817ed86d9d128228c4cb87f4114c9162c162"
+    },
+    {
+      "path": "deploy/README.md",
+      "sha256": "4906ad04cbb5630238355f1b14d90aa16b6d643bede7bac119a6a0a39ff41ecd"
+    }
+  ],
+  "scope": "Source inspection only; no AWS state queries, model training or inference in this iteration."
+}

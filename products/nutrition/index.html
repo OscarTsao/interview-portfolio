@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nutrition Information Search System — Yu-Ning Tsao</title><meta name="description" content="營養資訊查詢課程作品：FatSecret 即時搜尋、份量明細、營養圖表與收藏。">
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/demo.css">
+  <script src="vendor/chart.umd.js" defer></script><script src="main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#searchInput">跳至食物搜尋</a>
+  <aside class="portfolio-bar"><a href="/">← 作品展示</a><span id="source-status">正在確認 FatSecret 連線…</span></aside>
+  <nav aria-label="營養查詢導覽"><h1>Nutrition Information Search System</h1><button id="favorites-button">收藏清單 <span id="favorite-count">0</span></button></nav>
+  <main>
+    <section class="hero"><div class="hero-content"><h2>查詢食物，<br>了解每份營養資訊。</h2><form class="search-bar" id="search-form"><label class="sr-only" for="searchInput">食物名稱（例如 rice、apple）</label><input id="searchInput" type="search" placeholder="輸入食物名稱，例如 rice" maxlength="120" required><button type="submit">搜尋</button></form><p>資料由 FatSecret 即時提供，預設搜尋英文食物名稱。</p></div></section>
+    <div class="feedback"><p id="error-message" class="error" role="alert"></p><p id="loading-status" role="status"></p><button id="retry-button" hidden>重新載入</button></div>
+    <section id="results-section" aria-label="搜尋結果"></section><div id="pagination" class="pagination"></div>
+    <section id="pie-chart-section" hidden aria-labelledby="food-name"><button id="detail-back" class="back-btn">← 返回</button><h2 id="food-name" tabindex="-1"></h2><label for="serving-select">選擇份量</label><select id="serving-select"></select><p><strong id="calories-value"></strong> kcal</p><div class="chart-wrap"><canvas id="nutritionChart" role="img" aria-label="每份脂肪、碳水化合物與蛋白質比例；完整數值見下表"></canvas></div><div id="nutrition-values"></div><button id="detail-favorite"></button><a id="food-source" target="_blank" rel="noopener noreferrer" hidden>查看 FatSecret 食物來源 ↗</a></section>
+    <section id="favorites-section" hidden aria-labelledby="favorites-title"><button id="favorites-back">← 返回搜尋</button><h2 id="favorites-title" tabindex="-1">收藏清單</h2><p>收藏保存在此瀏覽器；開啟時重新取得營養資訊。</p><div id="favorites-table"></div></section>
+  </main>
+  <footer><a href="https://www.fatsecret.com" target="_blank" rel="noopener noreferrer">Powered by fatsecret</a><span>Web Technologies HW4 · 原作查詢、份量、圖表與收藏流程</span></footer>
+</body>
+</html>

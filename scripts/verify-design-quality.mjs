@@ -8,7 +8,7 @@ const demo = process.env.DEMO_TEST_ORIGIN || 'http://127.0.0.1:8787/';
 const paths = ['', 'engineering/', 'research/', 'vision/', 'reconstruction/',
   ...['bitoguard', 'hied', 'vision', 'maze', 'ecommerce', 'nutrition', 'realtime'].map(p => `projects/${p}/`),
   'coursework/hw1/index.html', 'coursework/hw2/index.html'];
-const demos = ['bitoguard/', 'bitoguard/alerts/', 'bitoguard/alerts/report/?alertId=demo-alert-001',
+const demos = ['', 'bitoguard/', 'bitoguard/alerts/', 'bitoguard/alerts/report/?alertId=demo-alert-001',
   'bitoguard/users/', 'bitoguard/graph/', 'bitoguard/model-ops/', 'hw3/', 'hw4/', 'hw5/'];
 const targets = [...paths.map(p => new URL(p, site).href), ...demos.map(p => new URL(p, demo).href)]
   .filter(url => !process.env.QUALITY_FILTER || url.includes(process.env.QUALITY_FILTER));

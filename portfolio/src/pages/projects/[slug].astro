@@ -3,6 +3,7 @@ import Site from '../../layouts/Site.astro';
 import { projects } from '../../data/projects';
 import { Image } from 'astro:assets';
 import { projectImages } from '../../data/project-images';
+import BitoEngineering from '../../components/BitoEngineering.astro';
 export function getStaticPaths(){return Object.keys(projects).map(slug=>({params:{slug}}));}
 const {slug}=Astro.params;
 const base=import.meta.env.BASE_URL;
@@ -25,8 +26,9 @@ const demoLabel=slug==='vision'&&!import.meta.env.DEV?'研究方法與來源':pr
 </section>
 <section id="walkthrough"><h2>{slug==='vision'&&!import.meta.env.DEV?'本機展示操作流程':'建議先這樣操作'}</h2>{slug==='vision'&&!import.meta.env.DEV&&<p>以下影像操作於本機提供；公開頁可閱讀研究方法、資料來源與個人貢獻。</p>}<ol class="step-list">{project.steps.map(step=><li>{step}</li>)}</ol><a class="button" href={url} target="_blank" rel="noopener noreferrer">{demoLabel} ↗</a><details><summary>如果現在無法開啟 Demo</summary><p>可以先沿著本頁的操作流程、設計取捨與展示範圍了解作品，再從上方入口重新嘗試。</p></details></section>
 <section id="decisions"><h2>技術選擇與取捨</h2>{project.decisions.map(item=><div><h3>{item.title}</h3><p>{item.text}</p></div>)}</section>
+{slug==='bitoguard'&&<BitoEngineering/>}
 <section id="evidence"><h2>成果與驗證</h2>{project.evidence.map(item=><div><h3>{item.title}</h3><p>{item.text}</p></div>)}{slug==='vision'&&<p><a href="https://doi.org/10.1167/tvst.14.10.15" target="_blank" rel="noopener noreferrer">閱讀 TVST 2025 論文 ↗</a> · DOI: 10.1167/tvst.14.10.15</p>}<p><a href={base+'engineering/'}>查看展示系統的架構與驗證範圍 →</a></p></section>
-{project.comparison&&<section id="comparison"><h2>原版與目前移植差異</h2><div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的功能對照表"><table><thead><tr><th scope="col">功能</th><th scope="col">原作</th><th scope="col">目前展示原型</th></tr></thead><tbody>{project.comparison.map(row=><tr>{row.map((cell,i)=>i===0?<th scope="row">{cell}</th>:<td>{cell}</td>)}</tr>)}</tbody></table></div><p>先保留原產品的操作與語義，再決定適合的運行環境。此表列出需要補齊的項目，不把原型當作完整移植。</p></section>}
+{project.comparison&&<section id="comparison"><h2>原版與目前移植差異</h2><div class="table-wrap" tabindex="0" role="region" aria-label="可左右捲動的功能對照表"><table><thead><tr><th scope="col">功能</th><th scope="col">原作</th><th scope="col">目前本機展示</th></tr></thead><tbody>{project.comparison.map(row=><tr>{row.map((cell,i)=>i===0?<th scope="row">{cell}</th>:<td>{cell}</td>)}</tr>)}</tbody></table></div><p>原作介面與主要任務保留；後端、資料保存和連線方式依展示環境調整。下方列出實際限制。</p></section>}
 <section id="scope"><h2>目前展示範圍</h2><p class="note">{project.boundary}</p>{slug==='hied'&&<p>資料來源：<a href="https://huggingface.co/datasets/mirobody/LingxiDiag-16K" target="_blank" rel="noopener noreferrer">LingxiDiag-16K ↗</a>。只呈現必要的案例欄位，沒有公開訪談逐字稿。</p>}<p>想深入討論實作、部署或研究方法，歡迎<a href="mailto:yuning.tsao8812@gmail.com">透過 Email 聯絡我</a>。</p></section>
 </div></section></Site>
 <style>.project-figure{margin:0}.contribution{padding-left:16px;border-left:3px solid var(--primary);color:var(--muted)}.case-nav{flex-direction:column;gap:0}.prose section+section{margin-top:36px}.prose section>h2{padding-top:8px}.case-hero{max-width:880px}@media(max-width:720px){.case-nav{flex-direction:row;gap:0 20px}.case-grid{gap:12px}.contribution{font-size:16px!important}}</style>

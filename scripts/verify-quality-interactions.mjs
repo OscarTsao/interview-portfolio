@@ -42,11 +42,11 @@ try {
   const relation=page.getByRole('button',{name:'使用裝置',exact:true});await relation.focus();await page.keyboard.press('Space');
   assert.equal(await relation.getAttribute('aria-pressed'),'false');
   evidence.push('Named controls, visible keyboard focus, toggle state and text graph are usable at 320px');
-  await page.route('**/api/products',r=>r.fulfill({status:503,contentType:'application/json',body:'{"error":"temporarily unavailable"}'}));
+  await page.route('**/api/store/state',r=>r.fulfill({status:503,contentType:'application/json',body:'{"error":"temporarily unavailable"}'}));
   await page.goto('http://127.0.0.1:8787/hw3/');
-  await page.getByRole('button',{name:'重新載入展示'}).waitFor();
-  await page.unroute('**/api/products');await page.getByRole('button',{name:'重新載入展示'}).click();
-  await page.locator('[data-add="notebook"]').waitFor();
+  await page.getByRole('button',{name:'重新載入'}).waitFor();
+  await page.unroute('**/api/store/state');await page.getByRole('button',{name:'重新載入'}).click();
+  await page.locator('.product-card').first().waitFor();
   evidence.push('Store initial load failure has an actionable recovery');
   await page.goto('http://127.0.0.1:4173/coursework/hw2/index.html');
   const fog=page.getByLabel('Foggy Mode:',{exact:true});await fog.focus();await page.keyboard.press('Space');
