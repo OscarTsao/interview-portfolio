@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_PACKAGE || 'playwright');
+const engine = process.env.PLAYWRIGHT_BROWSER || 'chromium';
+const browserType = require(process.env.PLAYWRIGHT_PACKAGE || 'playwright')[engine];
+assert.ok(browserType?.launch, 'Unsupported browser: '+engine);
 const site = process.env.PORTFOLIO_TEST_ORIGIN || 'http://127.0.0.1:4173/';
 const demo = process.env.DEMO_TEST_ORIGIN || 'http://127.0.0.1:8787/';
 const paths = ['', 'engineering/', 'research/', 'vision/', 'reconstruction/',
@@ -12,7 +14,7 @@ const demos = ['', 'bitoguard/', 'bitoguard/alerts/', 'bitoguard/alerts/report/?
   'bitoguard/users/', 'bitoguard/graph/', 'bitoguard/model-ops/', 'hw3/', 'hw4/', 'hw5/'];
 const targets = [...paths.map(p => new URL(p, site).href), ...demos.map(p => new URL(p, demo).href)]
   .filter(url => !process.env.QUALITY_FILTER || url.includes(process.env.QUALITY_FILTER));
-const browser = await chromium.launch({headless:true,...(process.env.CHROME_EXECUTABLE ? {executablePath:process.env.CHROME_EXECUTABLE} : {})});
+const browser = await browserType.launch({headless:true,...(engine==='chromium' && process.env.CHROME_EXECUTABLE ? {executablePath:process.env.CHROME_EXECUTABLE} : {})});
 const results = [];
 await mkdir('.artifacts', {recursive:true});
 try {
@@ -40,5 +42,5 @@ try {
     } finally { await page.close(); }
   }
 } finally { await browser.close(); }
-await writeFile('.artifacts/design-quality-verification.json',JSON.stringify({at:new Date().toISOString(),results},null,2));
+await writeFile('.artifacts/design-quality-verification.json',JSON.stringify({at:new Date().toISOString(),engine,results},null,2));
 assert.equal(results.filter(r => r.status !== 200 || r.violations.length || r.errors.length || r.reflow.some(v => !v.passes)).length,0,'See .artifacts/design-quality-verification.json');

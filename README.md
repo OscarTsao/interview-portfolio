@@ -35,6 +35,8 @@ Local site: `http://127.0.0.1:4173`; demo API: `http://127.0.0.1:8787`.
 
 Local edits do not publish automatically. The Pages workflow runs only when explicitly dispatched. Set repository variable `PUBLIC_DEMO_ORIGIN` to the deployed HTTPS Worker origin before running it.
 
+Keep `portfolio/public/_astro/` when publishing: these are previously public content-hashed assets needed by cached pages and browser back navigation. Before replacing an existing release, preserve its public assets so older documents can still retrieve their styles and project images. This does not retain private research artifacts. `npm run test:layout-cache` verifies both fresh and previously cached homepages, including desktop/mobile layout, image loading and back navigation. Set `PLAYWRIGHT_PACKAGE` to a Playwright installation and `PLAYWRIGHT_BROWSER=webkit` or `chromium`; `PORTFOLIO_TEST_ORIGIN` selects a local production preview or the public site.
+
 For the Worker, authenticate using Wrangler OAuth. This release uses the dedicated `oscar-interview-demo` D1 database configured in `cloudflare/wrangler.jsonc`; forks should provision their own database. Build BitoGuard with `NEXT_PUBLIC_PORTFOLIO_URL=https://oscartsao.github.io/interview-portfolio/`, prepare coursework assets with `PUBLIC_PORTFOLIO_URL` set to the same URL, apply migrations to that dedicated database, and deploy from `cloudflare/`. Set `FATSECRET_KEY` and `FATSECRET_SECRET` as Worker secrets, never as public build variables or committed files. Never reuse a private product database. The account owner confirmed Workers Free; deployment does not upgrade the account or purchase a domain.
 
 ## Verification and rollback

@@ -16,6 +16,7 @@
     "test:demo": "node --test test/cloudflare-demo.test.mjs test/store.test.mjs test/nutrition.test.mjs test/fighter.test.mjs test/coursework-chat.test.mjs",
     "test:products": "node scripts/verify-store-browser.mjs && node scripts/verify-nutrition-browser.mjs && node scripts/verify-realtime-browser.mjs && node scripts/verify-hied-browser.mjs",
     "test:design": "node scripts/verify-design-quality.mjs",
+    "test:layout-cache": "node scripts/verify-cached-portfolio.mjs",
     "check:demo": "npm run check --workspace cloudflare"
   },
   "devDependencies": {
